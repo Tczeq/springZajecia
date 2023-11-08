@@ -1,5 +1,6 @@
 package pl.sszlify.coding.student;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,11 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @RequestMapping("/students")
 public class StudentController {
-
-    private final StudentService studentService;
+    private final StrudentService strudentService;
 
     @GetMapping
-    public String getAll() {
+    public String getAll(){
         return "student/list";
     }
 }

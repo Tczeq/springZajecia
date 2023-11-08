@@ -1,5 +1,6 @@
 package pl.sszlify.coding.lesson;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,10 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/lessons")
 public class LessonController {
 
-    private final LessonService teacherService;
-
+    private final LessonService lessonService;
     @GetMapping
-    public String getAll() {
+    public String getAll(){
         return "lesson/list";
     }
 }
