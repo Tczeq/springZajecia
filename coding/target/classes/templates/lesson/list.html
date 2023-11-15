@@ -1,10 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Lekcje</title>
 </head>
 <body>
-LISTA LEKCJI
+<h1> LISTA LEKCJI</h1>
+
+<p3><a href="lessons/create">dodaj</a> </p3>
+</br>
+</br>
+
+<table>
+    <thead>
+    <tr>
+        <th> ID </th>
+        <th> Nazwa lekcji </th>
+        <th> Jezyk </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="lesson : ${lessons}">
+        <td th:text="${lesson.id}" ></td>
+        <td th:text="${lesson.name}" ></td>
+        <td th:text="${lesson.languages}" ></td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Tworzenie lekcji</title>
+</head>
+<body>
+<h1>UTWÓRZ LEKCJE</h1>
+
+<form method="post" action="/lessons/create">
+    <input type="text" name="name" placeholder="Nazwa lekcji" required/></br>
+
+    <label>Języki:</label></br>
+    <select name="languages" required>
+        <option th:each="language : ${languages}" th:text="${language}" th:value="${language}"/>
+    </select>
+    </br></br>
+    <button type="submit">Utwórz</button>
+</form>
+
+</body>
+</html>
