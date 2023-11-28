@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Studentci</title>
+    <title>Studenci</title>
 </head>
 <body>
 <h1>LISTA STUDENTOW</h1>
@@ -17,7 +17,7 @@
         <th> ID </th>
         <th> Imię </th>
         <th> Nazwisko </th>
-        <th> Języki </th>
+        <th> Język </th>
     </tr>
     </thead>
     <tbody>
@@ -25,7 +25,7 @@
         <td th:text="${student.id}"></td>
         <td th:text="${student.firstName}"></td>
         <td th:text="${student.lastName}"></td>
-        <td th:text="${student.languages}"></td>
+        <td th:text="${student.language}"></td>
     </tr>
     </tbody>
 </table>

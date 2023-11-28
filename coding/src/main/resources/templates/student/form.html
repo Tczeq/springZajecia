@@ -12,9 +12,16 @@
   <input type="text" name="lastName" placeholder="Nazwisko" required/></br>
   </br>
 
-  <label>Języki</label></br>
-  <select name="languages" multiple required>
+  <label>Język</label></br>
+  <select name="language" required>
+    <option value="" disabled selected>wybierz język</option>
     <option th:each="language : ${languages}" th:text="${language}" th:value="${language}"/>
+  </select>
+
+  <label>Nauczyciel</label></br>
+  <select name="teacherId" required>
+    <option value="" disabled selected>wybierz nauczyciela</option>
+    <option th:each="teacher : ${teachers}" th:text="${teacher}" th:value="${teacher.id}"/>
   </select>
 
   </br></br>

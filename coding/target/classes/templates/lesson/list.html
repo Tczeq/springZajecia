@@ -15,15 +15,13 @@
     <thead>
     <tr>
         <th> ID </th>
-        <th> Nazwa lekcji </th>
-        <th> Jezyk </th>
+        <th> Termin </th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="lesson : ${lessons}">
         <td th:text="${lesson.id}" ></td>
-        <td th:text="${lesson.name}" ></td>
-        <td th:text="${lesson.languages}" ></td>
+        <td th:text="${lesson.term}" ></td>
     </tr>
     </tbody>
 </table>
