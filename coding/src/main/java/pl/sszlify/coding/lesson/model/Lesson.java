@@ -19,7 +19,9 @@ public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
+//jQuery - wybieramy nauczyciela i przeladowuje nam studentow dla danego anuczyciela
+    //Asocjacja
+    //walidacja lekcji
     private LocalDateTime term;
 //    @OneToMany
 //    private Student student;
