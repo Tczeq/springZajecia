@@ -3,9 +3,12 @@ package pl.sszlify.coding.student.model;
 import jakarta.persistence.*;
 import lombok.*;
 import pl.sszlify.coding.common.Language;
+import pl.sszlify.coding.lesson.model.Lesson;
 import pl.sszlify.coding.teacher.model.Teacher;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Getter
@@ -26,4 +29,7 @@ public class Student {
 
     @ManyToOne
     private Teacher teacher;
+    @ManyToMany(mappedBy = "students")
+    private Set<Lesson> lessons = new HashSet<>();
+
 }

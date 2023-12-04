@@ -9,6 +9,9 @@
 <body>
 <h1> UTWÓRZ STUDENTA</h1>
 
+<button onclick="location.href='/students'">Return</button>
+<button onclick="window.location.href='/'" class="home-button">Home</button>
+
 <form method="post" action="/students/create">
     <input type="text" name="firstName" placeholder="Imię" required/></br>
     <input type="text" name="lastName" placeholder="Nazwisko" required/></br>
@@ -28,7 +31,8 @@
     </select>
 
     </br></br>
-    <button type="submit">Utwórz</button>
+    <button type="submit">Create</button>
+
 </form>
 </body>
 </html>

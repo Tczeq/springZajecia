@@ -33,4 +33,5 @@ public class StrudentService {
         student.setTeacher(teacher);
         studentRepository.save(student);
     }
+
 }

@@ -7,6 +7,8 @@ import pl.sszlify.coding.student.model.Student;
 import pl.sszlify.coding.teacher.model.Teacher;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Getter
@@ -23,10 +25,15 @@ public class Lesson {
     //Asocjacja
     //walidacja lekcji
     private LocalDateTime term;
-//    @OneToMany
-//    private Student student;
-//    @OneToMany
-//    private Teacher teacher;
+    @ManyToOne
+    private Teacher teacher;
+    @ManyToMany
+    @JoinTable(
+            name = "lesson_student",
+            joinColumns = @JoinColumn(name = "lesson_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    private Set<Student> students = new HashSet<>();
 
 
 }

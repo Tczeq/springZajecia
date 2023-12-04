@@ -7,13 +7,23 @@
 <body>
 <h1>UTWÓRZ LEKCJE</h1>
 
-<form method="post" action="/lessons/create">
-<!--    <input type="text" name="name" placeholder="Nazwa lekcji" required/></br>-->
-    <input type="datetime-local" name="term" required>
+<button onclick="location.href='/lessons'">Return</button>
+<button onclick="window.location.href='/'" class="home-button">Home</button>
+<!--<form method="post" action="/lessons/create">-->
+<!--&lt;!&ndash;    <input type="text" name="name" placeholder="Nazwa lekcji" required/></br>&ndash;&gt;-->
+<!--    <input type="datetime-local" name="term" th:min="${today}" required>-->
+<!--    </br></br>-->
+<!--    <button type="submit">Utwórz</button>-->
+<!--</form>-->
 
+
+<form method="post" action="/lessons/create" th:object="${lesson}">
+    <input type="datetime-local" name="term" th:min="${today}" required>
+    <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
     </br></br>
-    <button type="submit">Utwórz</button>
+    <button type="submit">Create</button>
 </form>
+
 
 </body>
 </html>
