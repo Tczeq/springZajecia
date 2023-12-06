@@ -11,5 +11,7 @@ import java.util.List;
 
 public interface LessonRepository extends JpaRepository<Lesson, Integer> {
 
-    List<Lesson> findAllByStudentsContaining(Student student);
+    List<Lesson> findAllByStudent(Student student);
+
+    List<Lesson> findAllByTeacher(Teacher teacher);
 }

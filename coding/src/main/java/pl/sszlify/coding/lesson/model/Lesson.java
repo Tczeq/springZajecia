@@ -21,19 +21,17 @@ public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
 //jQuery - wybieramy nauczyciela i przeladowuje nam studentow dla danego anuczyciela
     //Asocjacja
     //walidacja lekcji
     private LocalDateTime term;
+
     @ManyToOne
     private Teacher teacher;
-    @ManyToMany
-    @JoinTable(
-            name = "lesson_student",
-            joinColumns = @JoinColumn(name = "lesson_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
-    private Set<Student> students = new HashSet<>();
+
+    @ManyToOne
+    private Student student;
 
 
 }

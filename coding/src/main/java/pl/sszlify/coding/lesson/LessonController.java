@@ -41,30 +41,35 @@ public class LessonController {
         model.addAttribute("today", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         model.addAttribute("languages", Language.values());
         model.addAttribute("teachers", teacherService.findAll());
-//        model.addAttribute("students", studentService.findStudentsByTeacher(teacher));
         return "lesson/form";
     }
 
 
 
+
     @PostMapping("/create")
-    public String create(Lesson lesson, Model model) {
-        if (lesson.getTerm().isBefore(LocalDateTime.now())) {
-            model.addAttribute("today", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            model.addAttribute("languages", Language.values());
-            model.addAttribute("errorMessage", "Date can't be from the past");
-            return "lesson/form";
-        }
-        lessonService.create(lesson);
+    public String create(Lesson lesson, @RequestParam int teacherId, @RequestParam int studentId) {
+//        if (lesson.getTerm().isBefore(LocalDateTime.now())) {
+//            return modelForCreateLesson(model, "Data nie może być z przeszłości");
+//        }
+//
+//        if (!lessonService.availableTerm(lesson.getTerm(), lesson.getTeacher())) {
+//            return modelForCreateLesson(model,"Nauczyciel jest już zajęty w tym terminie");
+//        }
+//        model.addAttribute("today", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+//        model.addAttribute("languages", Language.values());
+//        model.addAttribute("errorMessage", "Data nie może być z przeszłości");
+//        return "lesson/form";
+        lessonService.create(lesson, teacherId, studentId);
         return "redirect:/lessons";
     }
 
-    @GetMapping(params = "student")
-    @ResponseBody
-    public List<LessonDto> getAll(@RequestParam Student student) {
-        return lessonService.findAllByStudent(student).stream()
-                .map(LessonDto::fromEntity)
-                .toList();
+
+    private String modelForCreateLesson(Model model, String message){
+        model.addAttribute("today", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        model.addAttribute("languages", Language.values());
+        model.addAttribute("errorMessage", message);
+        return "lesson/form";
     }
 
 //    @GetMapping(params = "teacher")
@@ -75,13 +80,10 @@ public class LessonController {
 //                .toList();
 //    }
 
-    @GetMapping(params = "teacher")
+    @DeleteMapping
     @ResponseBody
-    public List<StudentDto> getStudentsByTeacher(@RequestParam("teacher") int teacherId) {
-        Teacher teacher = teacherService.findTeacherById(teacherId);
-        return studentService.findStudentsByTeacher(teacher).stream()
-                .map(StudentDto::fromEntity)
-                .toList();
+    public void deleteById(@RequestParam int idToDelete) {
+        lessonService.deleteById(idToDelete);
     }
 
 

@@ -4,13 +4,14 @@ package pl.sszlify.coding.student;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import pl.sszlify.coding.common.Language;
 import pl.sszlify.coding.student.model.Student;
+import pl.sszlify.coding.student.model.dto.StudentDto;
 import pl.sszlify.coding.teacher.TeacherService;
+import pl.sszlify.coding.teacher.model.Teacher;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,5 +37,14 @@ public class StudentController {
     public String create(Student student, @RequestParam int teacherId){
         studentService.create(student, teacherId);
         return "redirect:/students";
+    }
+
+    @GetMapping(params = "teacher")
+    @ResponseBody
+    public List<StudentDto> getStudentsByTeacher(@RequestParam("teacher") int teacherId) {
+        Teacher teacher = teacherService.findTeacherById(teacherId);
+        return studentService.findStudentsByTeacher(teacher).stream()
+                .map(StudentDto::fromEntity)
+                .toList();
     }
 }

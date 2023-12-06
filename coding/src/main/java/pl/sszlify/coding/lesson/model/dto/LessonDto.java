@@ -18,14 +18,14 @@ public class LessonDto {
     private int id;
     private LocalDateTime term;
     private Teacher teacher;
-    private Set<Student> students = new HashSet<>();
+    private Student student;
 
     public static LessonDto fromEntity(Lesson lesson) {
         return LessonDto.builder()
                 .id(lesson.getId())
                 .term(lesson.getTerm())
                 .teacher(lesson.getTeacher())
-                .students(lesson.getStudents())
+                .student(lesson.getStudent())
                 .build();
     }
 }

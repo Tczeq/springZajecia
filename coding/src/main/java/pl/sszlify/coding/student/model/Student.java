@@ -29,7 +29,8 @@ public class Student {
 
     @ManyToOne
     private Teacher teacher;
-    @ManyToMany(mappedBy = "students")
+
+    @OneToMany(mappedBy = "student")
     private Set<Lesson> lessons = new HashSet<>();
 
 }
