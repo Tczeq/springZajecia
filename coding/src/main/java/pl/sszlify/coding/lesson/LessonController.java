@@ -36,13 +36,6 @@ public class LessonController {
         return "lesson/list";
     }
 
-//    @GetMapping("/create")
-//    public String getCreateForm(Model model) {
-//        model.addAttribute("today", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-//        model.addAttribute("languages", Language.values());
-//
-//        return "lesson/form";
-//    }
     @GetMapping("/create")
     public String getCreateForm(Model model) {
         model.addAttribute("today", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
@@ -54,33 +47,25 @@ public class LessonController {
 
 
 
-
-//    @PostMapping("/create")
-//    public String create(Lesson lesson) {
-//        lessonService.create(lesson);
-//        return "redirect:/lessons";
-//    }
-
-
     @PostMapping("/create")
-    public String create(Lesson lesson, BindingResult result, Model model) {
+    public String create(Lesson lesson, Model model) {
         if (lesson.getTerm().isBefore(LocalDateTime.now())) {
             model.addAttribute("today", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             model.addAttribute("languages", Language.values());
             model.addAttribute("errorMessage", "Date can't be from the past");
-            return "lesson/form"; // Powrót do formularza z komunikatem o błędzie
+            return "lesson/form";
         }
         lessonService.create(lesson);
         return "redirect:/lessons";
     }
 
-//    @GetMapping(params = "student")
-//    @ResponseBody
-//    public List<LessonDto> getAll(@RequestParam Student student) {
-//        return lessonService.findAllByStudent(student).stream()
-//                .map(LessonDto::fromEntity)
-//                .toList();
-//    }
+    @GetMapping(params = "student")
+    @ResponseBody
+    public List<LessonDto> getAll(@RequestParam Student student) {
+        return lessonService.findAllByStudent(student).stream()
+                .map(LessonDto::fromEntity)
+                .toList();
+    }
 
     @GetMapping(params = "teacher")
     @ResponseBody

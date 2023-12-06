@@ -35,6 +35,6 @@ public class StudentService {
     }
 
     public List<Student> findStudentsByTeacher(Teacher teacher) {
-        return studentRepository.findAllByTeacherContaining(teacher);
+        return studentRepository.findAllByTeacher(teacher);
     }
 }

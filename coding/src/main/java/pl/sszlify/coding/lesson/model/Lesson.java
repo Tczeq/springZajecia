@@ -28,14 +28,12 @@ public class Lesson {
     @ManyToOne
     private Teacher teacher;
     @ManyToMany
-//    @JoinTable(
-//            name = "lesson_student",
-//            joinColumns = @JoinColumn(name = "lesson_id"),
-//            inverseJoinColumns = @JoinColumn(name = "student_id")
-//    )
+    @JoinTable(
+            name = "lesson_student",
+            joinColumns = @JoinColumn(name = "lesson_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
     private Set<Student> students = new HashSet<>();
 
-//    @ManyToOne
-//    private Student student;
 
 }
