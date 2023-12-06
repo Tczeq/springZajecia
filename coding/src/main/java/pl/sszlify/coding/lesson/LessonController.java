@@ -41,7 +41,7 @@ public class LessonController {
         model.addAttribute("today", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         model.addAttribute("languages", Language.values());
         model.addAttribute("teachers", teacherService.findAll());
-        model.addAttribute("students", studentService.findAll());
+//        model.addAttribute("students", studentService.findStudentsByTeacher(teacher));
         return "lesson/form";
     }
 
@@ -67,14 +67,22 @@ public class LessonController {
                 .toList();
     }
 
+//    @GetMapping(params = "teacher")
+//    @ResponseBody
+//    public List<StudentDto> getStudentsByTeacher(@RequestParam Teacher teacher) {
+//        return studentService.findStudentsByTeacher(teacher).stream()
+//                .map(StudentDto::fromEntity)
+//                .toList();
+//    }
+
     @GetMapping(params = "teacher")
     @ResponseBody
-    public List<StudentDto> getStudentsByTeacher(@RequestParam Teacher teacher) {
+    public List<StudentDto> getStudentsByTeacher(@RequestParam("teacher") int teacherId) {
+        Teacher teacher = teacherService.findTeacherById(teacherId);
         return studentService.findStudentsByTeacher(teacher).stream()
                 .map(StudentDto::fromEntity)
                 .toList();
     }
-
 
 
 }

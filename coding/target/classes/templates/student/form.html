@@ -20,7 +20,6 @@
     <label>Język</label></br>
     <select id="langSelectId" name="language" required onchange="populateTeachers(this.id, 'teacherSelectId')">
         <option value="" disabled selected>wybierz język</option>
-<!--        <option th:each="te"-->
         <option th:each="language : ${languages}" th:text="${language}" th:value="${language}"/>
     </select>
     </br>

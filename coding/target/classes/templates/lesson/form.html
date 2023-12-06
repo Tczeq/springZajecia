@@ -28,12 +28,7 @@
 
     </br>
     </br>
-<!--    <label>Student</label></br>-->
-<!--    <select id="studentSelectId" name="studentId" required>-->
-<!--        <option value="" disabled selected>Wybierz studentów</option>-->
-<!--        <option th:each="student : ${students}" th:value="${student.lastName}" th:text="${student.firstName} + ' ' + ${student.lastName} "/>-->
 
-<!--    </select>-->
     <label>Student</label></br>
     <select id="studentSelectId" name="studentId" required>
         <option value="" disabled selected>Wybierz studentów</option>
@@ -61,15 +56,14 @@
     function populateStudents(studentSelectorId, teacherSelectorId) {
         let lSelect = document.getElementById(studentSelectorId);
         let tSelect = document.getElementById(teacherSelectorId);
-        let url = "/teachers?student=" + lSelect.value;
+        let url = "/lessons?teacher=" + lSelect.value;
         $.getJSON(url, function (teachers) {
-            tSelect.innerHTML = '<option value="" disabled selected>wybierz nauczyciela</option>';
+            tSelect.innerHTML = '<option value="" disabled selected>Wybierz studentów</option>';
             teachers.forEach(teacher => {
                 let option = '<option value="' + teacher.id + '">' + teacher.firstName + ' ' + teacher.lastName + '</option>';
                 tSelect.innerHTML += option;
             })
         })
     }
-
 
 </script>
