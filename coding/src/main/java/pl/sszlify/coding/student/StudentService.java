@@ -9,6 +9,7 @@ import pl.sszlify.coding.teacher.TeacherRepository;
 import pl.sszlify.coding.teacher.model.Teacher;
 
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -31,5 +32,9 @@ public class StudentService {
         }
         student.setTeacher(teacher);
         studentRepository.save(student);
+    }
+
+    public List<Student> findStudentsByTeacher(Teacher teacher) {
+        return studentRepository.findAllByTeacherContaining(teacher);
     }
 }

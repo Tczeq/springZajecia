@@ -16,12 +16,12 @@ import pl.sszlify.coding.teacher.TeacherService;
 @RequiredArgsConstructor
 @RequestMapping("/students")
 public class StudentController {
-    private final StrudentService strudentService;
+    private final StudentService studentService;
     private final TeacherService teacherService;
 
     @GetMapping
     public String getAll(Model model){
-        model.addAttribute("students", strudentService.findAll());
+        model.addAttribute("students", studentService.findAll());
         return "student/list";
     }
 
@@ -34,7 +34,7 @@ public class StudentController {
 
     @PostMapping("/create")
     public String create(Student student, @RequestParam int teacherId){
-        strudentService.create(student, teacherId);
+        studentService.create(student, teacherId);
         return "redirect:/students";
     }
 }

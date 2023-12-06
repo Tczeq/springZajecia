@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Tworzenie lekcji</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
 <h1>UTWÓRZ LEKCJE</h1>
@@ -21,9 +22,83 @@
     <input type="datetime-local" name="term" th:min="${today}" required>
     <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
     </br></br>
+
+
+<!--    <label>Nauczyciel</label></br>-->
+<!--    <select id="teacherSelectId" name="teacherId" required onchange="populateStudents(this.id, 'studentSelectId')">-->
+<!--        <option value="" disabled selected>Wybierz nauczyciela</option>-->
+<!--    </select>-->
+    <label>Nauczyciel</label></br>
+    <select id="teacherSelectId" name="teacherId" required onchange="populateStudents(this.id, 'studentSelectId')">
+        <option value="" disabled selected>Wybierz nauczyciela</option>
+        <option th:each="teacher : ${teachers}" th:value="${teacher.id}" th:text="${teacher.firstName} + ' ' + ${teacher.lastName}"></option>
+    </select>
+
+    </br>
+    </br>
+<!--    <label>Student</label></br>-->
+<!--    <select id="studentSelectId" name="studentId" required>-->
+<!--        <option value="" disabled selected>Wybierz studnetów</option>-->
+<!--        <option th:each="student : ${tea}" th:text="${language}" th:value="${language}"/>-->
+<!--    </select>-->
+    <label>Student</label></br>
+    <select id="studentSelectId" name="studentId" required>
+        <option value="" disabled selected>Wybierz studentów</option>
+        <!-- JavaScript będzie dynamicznie dodawał opcje tutaj -->
+    </select>
+
+    </br>
+    </br>
+
+
+<!--    <label>Język</label></br>-->
+<!--    <select id="langSelectId" name="language" required onchange="populateTeachers(this.id, 'teacherSelectId')">-->
+<!--        <option value="" disabled selected>wybierz język</option>-->
+<!--        <option th:each="language : ${languages}" th:text="${language}" th:value="${language}"/>-->
+<!--    </select>-->
+
+
+
+
+
+    </br>
+    </br>
     <button type="submit">Create</button>
 </form>
 
 
 </body>
 </html>
+
+
+<script type="text/javascript">
+
+    // function populateStudents(studentSelectorId, teacherSelectorId) {
+    //     let lSelect = document.getElementById(studentSelectorId);
+    //     let tSelect = document.getElementById(teacherSelectorId);
+    //     let url = "/teachers?student=" + lSelect.value;
+    //     $.getJSON(url, function (teachers) {
+    //         tSelect.innerHTML = '<option value="" disabled selected>wybierz nauczyciela</option>';
+    //         teachers.forEach(teacher => {
+    //             let option = '<option value="' + teacher.id + '">' + teacher.firstName + ' ' + teacher.lastName + '</option>';
+    //             tSelect.innerHTML += option;
+    //         })
+    //     })
+    // }
+
+
+    function populateStudents(teacherSelectorId, studentSelectorId) {
+        let teacherSelect = document.getElementById(teacherSelectorId);
+        let studentSelect = document.getElementById(studentSelectorId);
+        let url = "/students?teacher=" + teacherSelect.value;
+        $.getJSON(url, function (students) {
+            studentSelect.innerHTML = '<option value="" disabled selected>Wybierz studentów</option>';
+            students.forEach(student => {
+                let option = '<option value="' + student.id + '">' + student.firstName + ' ' + student.lastName + '</option>';
+                studentSelect.innerHTML += option;
+            })
+        })
+    }
+
+
+</script>

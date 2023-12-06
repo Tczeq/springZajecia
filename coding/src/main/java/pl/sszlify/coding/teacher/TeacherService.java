@@ -1,5 +1,6 @@
 package pl.sszlify.coding.teacher;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.sszlify.coding.common.Language;
@@ -23,5 +24,10 @@ public class TeacherService {
 
     public List<Teacher> findAllByLanguage(Language language) {
         return teacherRepository.findAllByLanguagesContaining(language);
+    }
+
+    public Teacher findTeacherById(int teacherId) {
+        return teacherRepository.findById(teacherId)
+                .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + teacherId + " not found"));
     }
 }

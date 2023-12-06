@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.sszlify.coding.lesson.model.Lesson;
 import pl.sszlify.coding.student.StudentRepository;
+import pl.sszlify.coding.student.model.Student;
 import pl.sszlify.coding.teacher.TeacherRepository;
+import pl.sszlify.coding.teacher.model.Teacher;
 
 import java.util.List;
 
@@ -22,4 +24,13 @@ public class LessonService {
     public void create(Lesson lesson) {
         lessonRepository.save(lesson);
     }
+
+
+
+
+    public List<Lesson> findAllByStudent(Student student) {
+        return lessonRepository.findAllByStudentsContaining(student);
+    }
+
+
 }
