@@ -40,9 +40,6 @@
 
 
 
-
-    </br>
-    </br>
     <button type="submit">Create</button>
 </form>
 
@@ -56,7 +53,7 @@
     function populateStudents(studentSelectorId, teacherSelectorId) {
         let lSelect = document.getElementById(studentSelectorId);
         let tSelect = document.getElementById(teacherSelectorId);
-        let url = "/lessons?teacher=" + lSelect.value;
+        let url = "/students?teacher=" + lSelect.value;
         $.getJSON(url, function (teachers) {
             tSelect.innerHTML = '<option value="" disabled selected>Wybierz studentów</option>';
             teachers.forEach(teacher => {

@@ -3,6 +3,8 @@ package pl.sszlify.coding.lesson;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import pl.sszlify.coding.lesson.exception.InvalidDate;
 import pl.sszlify.coding.lesson.model.Lesson;
 import pl.sszlify.coding.student.StudentRepository;
 import pl.sszlify.coding.student.model.Student;
@@ -24,13 +26,18 @@ public class LessonService {
         return lessonRepository.findAll();
     }
 
+    @Transactional
     public void create(Lesson lesson, int teacherId, int studentId) {
-        // TODO: 06.12.2023 weryfikacja, czy termin nie jest w przeszłości
-//        if(lesson.)
-        Teacher teacher = teacherRepository.findById(teacherId) // TODO: 06.12.2023 wywołanie powinno być z lockiem
+        LocalDateTime term = lesson.getTerm();
+        if (term.isBefore(LocalDateTime.now())) {
+            throw new InvalidDate("Term cannot be from the past ");
+        }
+        Teacher teacher = teacherRepository.findWithLockingById(teacherId) // TODO: 06.12.2023 wywołanie powinno być z lockiem
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat
                         .format("Teacher with id={0} not found", teacherId)));
-        // TODO: 06.12.2023 weryfikacja, czy termin nie pokrywa się z żadną inną istniejącą lekcją dla tego nauczyciela
+        if (lessonRepository.existsByTeacherIdAndTermAfterAndTermBefore(teacherId, term.minusHours(1), term.plusHours(1))) {
+            throw new InvalidDate("Term unavailable");
+        }
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat
                         .format("Student with id={0} not found", studentId)));
@@ -39,19 +46,6 @@ public class LessonService {
         lessonRepository.save(lesson);
     }
 
-
-    public List<Lesson> findAllByStudent(Student student) {
-        return lessonRepository.findAllByStudent(student);
-    }
-
-    public boolean availableTerm(LocalDateTime lessonTime, Teacher teacher) {
-        for (Lesson lesson : lessonRepository.findAllByTeacher(teacher)) {
-            if (lesson.getTerm().equals(lessonTime)) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     public void deleteById(int idToDelete) {
         lessonRepository.deleteById(idToDelete);

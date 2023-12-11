@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.sszlify.coding.common.Language;
+import pl.sszlify.coding.lesson.exception.InvalidDate;
 import pl.sszlify.coding.lesson.model.Lesson;
 import pl.sszlify.coding.lesson.model.dto.LessonDto;
 import pl.sszlify.coding.student.StudentService;
@@ -47,8 +48,11 @@ public class LessonController {
 
 
 
+    /*
+    * Dodaje tutaj Model, aby mozna bylo po froncie wyswietlac wiadomosci
+    * */
     @PostMapping("/create")
-    public String create(Lesson lesson, @RequestParam int teacherId, @RequestParam int studentId) {
+    public String create(Lesson lesson, @RequestParam int teacherId, @RequestParam int studentId, Model model) {
 //        if (lesson.getTerm().isBefore(LocalDateTime.now())) {
 //            return modelForCreateLesson(model, "Data nie może być z przeszłości");
 //        }
@@ -60,12 +64,22 @@ public class LessonController {
 //        model.addAttribute("languages", Language.values());
 //        model.addAttribute("errorMessage", "Data nie może być z przeszłości");
 //        return "lesson/form";
-        lessonService.create(lesson, teacherId, studentId);
-        return "redirect:/lessons";
+
+
+        try {
+
+            lessonService.create(lesson, teacherId, studentId);
+            return "redirect:/lessons";
+        } catch (InvalidDate e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "lesson/form";
+        }
+
+
     }
 
 
-    private String modelForCreateLesson(Model model, String message){
+    private String modelForCreateLesson(Model model, String message) {
         model.addAttribute("today", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         model.addAttribute("languages", Language.values());
         model.addAttribute("errorMessage", message);

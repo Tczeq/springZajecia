@@ -2,6 +2,8 @@ package pl.sszlify.coding.teacher.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import pl.sszlify.coding.common.Language;
 import pl.sszlify.coding.student.model.Student;
 
@@ -14,6 +16,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
+@SQLDelete(sql = "UPDATE teacher SET fired = 1 WHERE id = ?")
+@Where(clause = "fired = false")
 public class Teacher {
 
     @Id
@@ -32,6 +36,11 @@ public class Teacher {
     @OneToMany(mappedBy = "teacher")
     private Set<Student> students;
 
+    @Column(name = "fired")
+    private boolean fired = false;
+
+    @Version
+    private Integer version;
     @Override
     public String toString() {
         return firstName + " " + lastName;

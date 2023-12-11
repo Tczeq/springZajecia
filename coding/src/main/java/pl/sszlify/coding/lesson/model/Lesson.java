@@ -2,6 +2,8 @@ package pl.sszlify.coding.lesson.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import pl.sszlify.coding.common.Language;
 import pl.sszlify.coding.student.model.Student;
 import pl.sszlify.coding.teacher.model.Teacher;
@@ -17,6 +19,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
+@SQLDelete(sql = "UPDATE lesson SET deleted = 1 WHERE id = ?")
+@Where(clause = "deleted = false")
 public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,5 +37,9 @@ public class Lesson {
     @ManyToOne
     private Student student;
 
+    @Version
+    private Integer version;
 
+    @Column(name = "deleted")
+    private boolean isDeleted = false;
 }

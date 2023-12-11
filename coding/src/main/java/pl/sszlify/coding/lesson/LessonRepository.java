@@ -6,12 +6,13 @@ import pl.sszlify.coding.lesson.model.Lesson;
 import pl.sszlify.coding.student.model.Student;
 import pl.sszlify.coding.teacher.model.Teacher;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
 public interface LessonRepository extends JpaRepository<Lesson, Integer> {
 
-    List<Lesson> findAllByStudent(Student student);
+    List<Lesson> findByTeacher(Teacher teacher);
 
-    List<Lesson> findAllByTeacher(Teacher teacher);
+    boolean existsByTeacherIdAndTermAfterAndTermBefore(int teacherId, LocalDateTime from, LocalDateTime to);
 }

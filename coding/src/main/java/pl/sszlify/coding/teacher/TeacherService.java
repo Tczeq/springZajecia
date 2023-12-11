@@ -30,4 +30,5 @@ public class TeacherService {
         return teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + teacherId + " not found"));
     }
+
 }

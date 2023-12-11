@@ -29,9 +29,27 @@
         <td th:text="${teacher.firstName}"></td>
         <td th:text="${teacher.lastName}"></td>
         <td th:text="${teacher.languages}"></td>
+        <td> <button th:value="${teacher.id}" onclick="deleteTeacher(this.value)">usuń</button> </td>
     </tr>
     </tbody>
 </table>
 
 </body>
 </html>
+<script type="text/javascript">
+
+    function deleteTeacher(teacherId) {
+        let url = "/teacher?idToDelete=" + teacherId;
+        $.ajax({
+            url: url,
+            method: 'DELETE',
+            success: function () {
+                document.location.reload()
+            },
+            error: function () {
+                alert("nie pykło!")
+            }
+        })
+    }
+
+</script>
