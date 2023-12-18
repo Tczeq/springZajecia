@@ -35,6 +35,14 @@ public class TeacherController {
         return "redirect:/teachers";
     }
 
+
+    @DeleteMapping
+    @ResponseBody
+    public void teacherIdToDelete(@RequestParam int teacherIdToDelete) {
+        teacherService.deleteById(teacherIdToDelete);
+    }
+
+
     @GetMapping(params = "language")
     @ResponseBody
     public List<TeacherDto> getAll(@RequestParam Language language) {
@@ -42,4 +50,21 @@ public class TeacherController {
                 .map(TeacherDto::fromEntity)
                 .toList();
     }
+
+
+    @PutMapping("/fire/{id}")
+    @ResponseBody
+    public String firedTeacherById(@PathVariable("id") int teacherId) {
+        teacherService.fireTeacher(teacherId);
+        return "redirect:/teachers";
+    }
+
+    @PutMapping("/hire/{id}")
+    @ResponseBody
+    public String hiredTeacherById(@PathVariable("id") int teacherId) {
+        teacherService.hireTeacher(teacherId);
+        return "redirect:/teachers";
+    }
+
+
 }

@@ -1,6 +1,7 @@
 package pl.sszlify.coding.teacher;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.sszlify.coding.common.Language;
@@ -22,6 +23,18 @@ public class TeacherService {
         teacherRepository.save(teacher);
     }
 
+//    public void deleteById(int idToDelete) {
+//        teacherRepository.deleteById(idToDelete);
+//    }
+
+
+    @Transactional
+    public void deleteById(int idToDelete) {
+        teacherRepository.deleteById(idToDelete);
+    }
+
+
+
     public List<Teacher> findAllByLanguage(Language language) {
         return teacherRepository.findAllByLanguagesContaining(language);
     }
@@ -30,5 +43,19 @@ public class TeacherService {
         return teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + teacherId + " not found"));
     }
+
+    public void fireTeacher(int teacherId){
+        Teacher teacher = findTeacherById(teacherId);
+        teacher.setFired(true);
+        teacherRepository.save(teacher);
+
+    }
+
+    public void hireTeacher(int teacherId) {
+        Teacher teacher = findTeacherById(teacherId);
+        teacher.setFired(false);
+        teacherRepository.save(teacher);
+    }
+
 
 }

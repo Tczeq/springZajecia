@@ -10,14 +10,25 @@ import pl.sszlify.coding.student.model.Student;
 import java.util.HashSet;
 import java.util.Set;
 
+
+
+
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@SQLDelete(sql = "UPDATE teacher SET fired = 1 WHERE id = ?")
-@Where(clause = "fired = false")
+//@SQLDelete(sql = "UPDATE teacher SET fired = true WHERE id = ?")
+
+
+
+//@SQLDelete(sql = "UPDATE teacher SET fired = true WHERE id = ?")
+//@SQLDelete(sql = "UPDATE teacher SET deleted = 1 WHERE id = ? AND deleted = ?")
+@SQLDelete(sql = "UPDATE teacher SET deleted = 1, version = version + 1 WHERE id = ? AND version = ?")
+
+@Where(clause = "deleted = false") // tutaj ustawiamy gdy chcemy wyswietlic tylko tych ktorzy sa zatudnieni albo nie
 public class Teacher {
 
     @Id
@@ -34,13 +45,18 @@ public class Teacher {
     private Set<Language> languages = new HashSet<>();
 
     @OneToMany(mappedBy = "teacher")
+//    @Where(clause = "fired = false")
     private Set<Student> students;
+
+    @Version
+    private Integer version;
+
+    @Column(name = "deleted")
+    private boolean deleted = false;
 
     @Column(name = "fired")
     private boolean fired = false;
 
-    @Version
-    private Integer version;
     @Override
     public String toString() {
         return firstName + " " + lastName;
