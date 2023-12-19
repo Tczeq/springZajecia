@@ -34,7 +34,19 @@ public class TeacherController {
         teacherService.create(teacher);
         return "redirect:/teachers";
     }
+    @GetMapping("/update/{id}")
+    public String getUpdateForm(@PathVariable("id") int teacherId, Model model) {
+        Teacher teacher = teacherService.findTeacherById(teacherId);
+        model.addAttribute("teacher", teacher);
+        model.addAttribute("languages", Language.values());
+        return "teacher/form";
+    }
 
+    @PostMapping("/update")
+    public String updateTeacher(Teacher teacher) {
+        teacherService.update(teacher);
+        return "redirect:/teachers";
+    }
 
     @DeleteMapping
     @ResponseBody

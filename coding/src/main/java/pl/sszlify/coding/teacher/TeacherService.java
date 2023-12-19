@@ -58,4 +58,15 @@ public class TeacherService {
     }
 
 
+    public void update(Teacher updatedTeacher) {
+        Teacher existingTeacher = teacherRepository.findById(updatedTeacher.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Teacher with id " + updatedTeacher.getId() + " not found"));
+
+        existingTeacher.setFirstName(updatedTeacher.getFirstName());
+        existingTeacher.setLastName(updatedTeacher.getLastName());
+        existingTeacher.setLanguages(updatedTeacher.getLanguages());
+
+        teacherRepository.save(existingTeacher);
+    }
+
 }

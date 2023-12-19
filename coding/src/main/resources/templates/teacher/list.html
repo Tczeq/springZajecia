@@ -46,6 +46,10 @@
         <!--            <button class="status-button" th:data-id="${teacher.id}" th:if="${!teacher.fired}">Zwolnij</button>-->
         <!--            <button class="status-button" th:data-id="${teacher.id}" th:if="${teacher.fired}">Zatrudnij</button>-->
         <!--        </td>-->
+        <td>
+            <button th:onclick="'location.href=\'/teachers/update/' + ${teacher.id} + '\''">Update</button>
+        </td>
+
 
 
         <td>
@@ -54,6 +58,7 @@
             <button th:value="${teacher.id}" onclick="hireTeacher(this.value)" th:if="${teacher.fired}">ZATRUDNIJ
             </button>
         </td>
+
 
 
     </tr>
@@ -109,6 +114,9 @@
             }
         });
     }
+
+
+
 
 </script>
 

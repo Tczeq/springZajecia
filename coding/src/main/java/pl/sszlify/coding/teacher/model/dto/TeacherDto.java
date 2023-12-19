@@ -15,6 +15,8 @@ public class TeacherDto {
     private String firstName;
     private String lastName;
     private Set<Language> languages;
+    private boolean deleted;
+    private boolean fired;
 
     public static TeacherDto fromEntity(Teacher teacher) {
         return TeacherDto.builder()
@@ -22,6 +24,8 @@ public class TeacherDto {
                 .firstName(teacher.getFirstName())
                 .lastName(teacher.getLastName())
                 .languages(teacher.getLanguages())
+                .deleted(teacher.isDeleted())
+                .fired(teacher.isFired())
                 .build();
     }
 }

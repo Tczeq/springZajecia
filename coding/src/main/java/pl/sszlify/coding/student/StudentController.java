@@ -47,4 +47,27 @@ public class StudentController {
                 .map(StudentDto::fromEntity)
                 .toList();
     }
+
+
+    @DeleteMapping
+    @ResponseBody
+    public void studentIdToDelete(@RequestParam int studentIdToDelete) {
+        studentService.deleteById(studentIdToDelete);
+    }
+
+
+    @PutMapping("/delete/{id}")
+    @ResponseBody
+    public String deleteStudentById(@PathVariable("id") int studentId) {
+        studentService.deleteStudent(studentId);
+        return "redirect:/students";
+    }
+
+    @PutMapping("/bringBack/{id}")
+    @ResponseBody
+    public String bringBackStudentById(@PathVariable("id") int studentId) {
+        studentService.bringBackStudent(studentId);
+        return "redirect:/students";
+    }
+
 }

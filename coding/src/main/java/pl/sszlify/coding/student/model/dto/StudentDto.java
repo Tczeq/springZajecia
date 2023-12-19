@@ -14,6 +14,7 @@ public class StudentDto {
     private String lastName;
     private Language language;
     private int teacherId;
+    private boolean deleted;
 
     public static StudentDto fromEntity(Student student) {
         return StudentDto.builder()
@@ -22,6 +23,7 @@ public class StudentDto {
                 .lastName(student.getLastName())
                 .language(student.getLanguage())
                 .teacherId(student.getTeacher() != null ? student.getTeacher().getId() : null)
+                .deleted(student.isDeleted())
                 .build();
     }
 }

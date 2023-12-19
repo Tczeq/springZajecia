@@ -46,6 +46,21 @@ public class LessonService {
         lessonRepository.save(lesson);
     }
 
+    public Lesson findLessonById(int lessonId) {
+        return lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + lessonId + " not found"));
+    }
+
+    public void update(Lesson updatedLesson) {
+        Lesson existingLesson = lessonRepository.findById(updatedLesson.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Teacher with id " + updatedLesson.getId() + " not found") );
+        existingLesson.setTerm(updatedLesson.getTerm());
+        existingLesson.setTeacher(updatedLesson.getTeacher());
+        existingLesson.setStudent(updatedLesson.getStudent());
+
+        lessonRepository.save(existingLesson);
+    }
+
 
     public void deleteById(int idToDelete) {
         lessonRepository.deleteById(idToDelete);

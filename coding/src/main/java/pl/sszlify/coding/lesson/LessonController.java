@@ -46,28 +46,12 @@ public class LessonController {
     }
 
 
-
-
     /*
-    * Dodaje tutaj Model, aby mozna bylo po froncie wyswietlac wiadomosci
-    * */
+     * Dodaje tutaj Model, aby mozna bylo po froncie wyswietlac wiadomosci
+     * */
     @PostMapping("/create")
     public String create(Lesson lesson, @RequestParam int teacherId, @RequestParam int studentId, Model model) {
-//        if (lesson.getTerm().isBefore(LocalDateTime.now())) {
-//            return modelForCreateLesson(model, "Data nie może być z przeszłości");
-//        }
-//
-//        if (!lessonService.availableTerm(lesson.getTerm(), lesson.getTeacher())) {
-//            return modelForCreateLesson(model,"Nauczyciel jest już zajęty w tym terminie");
-//        }
-//        model.addAttribute("today", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-//        model.addAttribute("languages", Language.values());
-//        model.addAttribute("errorMessage", "Data nie może być z przeszłości");
-//        return "lesson/form";
-
-
         try {
-
             lessonService.create(lesson, teacherId, studentId);
             return "redirect:/lessons";
         } catch (InvalidDate e) {
@@ -79,20 +63,33 @@ public class LessonController {
     }
 
 
-    private String modelForCreateLesson(Model model, String message) {
-        model.addAttribute("today", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-        model.addAttribute("languages", Language.values());
-        model.addAttribute("errorMessage", message);
+    @GetMapping("/update/{id}")
+    public String getUpdateForm(@PathVariable("id") int lessonId, Model model) {
+        Lesson lesson = lessonService.findLessonById(lessonId);
+        model.addAttribute("lesson", lesson);
+        model.addAttribute("teachers", teacherService.findAll());
+        model.addAttribute("students", studentService.findAll());
         return "lesson/form";
     }
 
-//    @GetMapping(params = "teacher")
-//    @ResponseBody
-//    public List<StudentDto> getStudentsByTeacher(@RequestParam Teacher teacher) {
-//        return studentService.findStudentsByTeacher(teacher).stream()
-//                .map(StudentDto::fromEntity)
-//                .toList();
+
+//        @PostMapping("/update")
+//    public String updateLesson(Lesson lesson) {
+//        lessonService.update(lesson);
+//        return "redirect:/lessons";
 //    }
+    @PostMapping("/update")
+    public String updateLesson(Lesson lesson, @RequestParam int studentId, @RequestParam int teacherId) {
+        Lesson existingLesson = lessonService.findLessonById(lesson.getId());
+        Student student = studentService.findStudentById(studentId);
+        Teacher teacher = teacherService.findTeacherById(teacherId);
+        existingLesson.setStudent(student);
+        existingLesson.setTeacher(teacher);
+        existingLesson.setTerm(lesson.getTerm());
+        lessonService.update(existingLesson);
+        return "redirect:/lessons";
+    }
+
 
     @DeleteMapping
     @ResponseBody

@@ -3,6 +3,7 @@ package pl.sszlify.coding.student;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.sszlify.coding.common.exception.LanguageMismatchException;
 import pl.sszlify.coding.student.model.Student;
 import pl.sszlify.coding.teacher.TeacherRepository;
@@ -36,5 +37,30 @@ public class StudentService {
 
     public List<Student> findStudentsByTeacher(Teacher teacher) {
         return studentRepository.findAllByTeacher(teacher);
+    }
+
+
+    @Transactional
+    public void deleteById(int idToDelete) {
+        studentRepository.deleteById(idToDelete);
+    }
+
+    public Student findStudentById(int studentId) {
+        return studentRepository.findById(studentId)
+                .orElseThrow(() -> new EntityNotFoundException("Student with id " + studentId + " not found"));
+    }
+
+
+    public void deleteStudent(int studentId){
+        Student student = findStudentById(studentId);
+        student.setDeleted(true);
+        studentRepository.save(student);
+
+    }
+
+    public void bringBackStudent(int studentId) {
+        Student student = findStudentById(studentId);
+        student.setDeleted(false);
+        studentRepository.save(student);
     }
 }
