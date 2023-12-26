@@ -25,6 +25,7 @@ import java.util.Set;
 //@SQLDelete(sql = "UPDATE student SET deleted = 1 WHERE id = ? AND deleted = ?")
 //@Where(clause = "deleted = false")
 @SQLDelete(sql = "UPDATE student SET deleted = 1 WHERE id = ? AND deleted = ?")
+//@SQLDelete(sql = "UPDATE student SET deleted = 1 WHERE id = ?")
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

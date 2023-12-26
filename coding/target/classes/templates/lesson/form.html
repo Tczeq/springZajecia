@@ -20,11 +20,12 @@
     </br></br>
 
     <label>Nauczyciel</label><br>
-    <select id="teacherSelectId" name="teacherId" required onchange="populateStudents('teacherSelectId', 'studentSelectId')">
+    <select id="teacherSelectId" name="teacherId" required
+            onchange="populateStudents('teacherSelectId', 'studentSelectId')">
         <option value="" disabled selected>Wybierz nauczyciela</option>
         <option th:each="teacher : ${teachers}" th:value="${teacher?.id}"
                 th:text="${teacher?.firstName} + ' ' + ${teacher?.lastName}"
-                th:selected="${lesson != null and lesson.teacher.id == teacher.id}">
+                th:selected="${lesson != null and lesson.teacher?.id == teacher.id}">
         </option>
     </select>
 
@@ -33,11 +34,11 @@
 
 
     <label>Student</label></br>
-    <select id="studentSelectId" name="studentId" required >
-        <option value="" disabled selected>Wybierz studentów</option>
+    <select id="studentSelectId" name="studentId" required>
+        <option value="" disabled selected>Wybierz studentow</option>
         <option th:each="student : ${students}" th:value="${student?.id}"
                 th:text="${student?.firstName} + ' ' + ${student?.lastName}"
-                th:selected="${lesson != null and lesson.student.id == student.id}">
+                th:selected="${lesson != null and lesson.student?.id == student.id}">
         </option>
     </select>
 
@@ -65,7 +66,6 @@
             })
         })
     }
-
 
 
 </script>

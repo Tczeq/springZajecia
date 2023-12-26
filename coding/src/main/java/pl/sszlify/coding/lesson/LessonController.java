@@ -59,7 +59,6 @@ public class LessonController {
             return "lesson/form";
         }
 
-
     }
 
 
@@ -73,11 +72,6 @@ public class LessonController {
     }
 
 
-//        @PostMapping("/update")
-//    public String updateLesson(Lesson lesson) {
-//        lessonService.update(lesson);
-//        return "redirect:/lessons";
-//    }
     @PostMapping("/update")
     public String updateLesson(Lesson lesson, @RequestParam int studentId, @RequestParam int teacherId) {
         Lesson existingLesson = lessonService.findLessonById(lesson.getId());
@@ -94,6 +88,10 @@ public class LessonController {
     @DeleteMapping
     @ResponseBody
     public void deleteById(@RequestParam int idToDelete) {
+        Lesson lesson = lessonService.findLessonById(idToDelete);
+        if(lesson.getTerm().isBefore(LocalDateTime.now()) && lesson.getTerm().plusHours(1).isAfter(LocalDateTime.now())) {
+            throw new InvalidDate("Lesson already started");
+        }
         lessonService.deleteById(idToDelete);
     }
 

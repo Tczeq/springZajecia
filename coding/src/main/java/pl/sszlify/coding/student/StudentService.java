@@ -24,8 +24,9 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
+    @Transactional
     public void create(Student student, int teacherId){
-        Teacher teacher = teacherRepository.findById(teacherId)
+        Teacher teacher = teacherRepository.findWithLockingById(teacherId)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat
                         .format("Teacher with id={0} not found", teacherId)));
         if (!teacher.getLanguages().contains(student.getLanguage())) {
@@ -51,6 +52,7 @@ public class StudentService {
     }
 
 
+    @Transactional
     public void deleteStudent(int studentId){
         Student student = findStudentById(studentId);
         student.setDeleted(true);
@@ -58,6 +60,8 @@ public class StudentService {
 
     }
 
+
+    @Transactional
     public void bringBackStudent(int studentId) {
         Student student = findStudentById(studentId);
         student.setDeleted(false);

@@ -56,12 +56,12 @@ public class StudentController {
     }
 
 
-    @PutMapping("/delete/{id}")
-    @ResponseBody
-    public String deleteStudentById(@PathVariable("id") int studentId) {
-        studentService.deleteStudent(studentId);
-        return "redirect:/students";
-    }
+//    @PutMapping("/delete/{id}")
+//    @ResponseBody
+//    public String deleteStudentById(@PathVariable("id") int studentId) {
+//        studentService.deleteStudent(studentId);
+//        return "redirect:/students";
+//    }
 
     @PutMapping("/bringBack/{id}")
     @ResponseBody

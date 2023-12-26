@@ -20,12 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
-//@SQLDelete(sql = "UPDATE teacher SET fired = true WHERE id = ?")
 
-
-
-//@SQLDelete(sql = "UPDATE teacher SET fired = true WHERE id = ?")
-//@SQLDelete(sql = "UPDATE teacher SET deleted = 1 WHERE id = ? AND deleted = ?")
 @SQLDelete(sql = "UPDATE teacher SET deleted = 1, version = version + 1 WHERE id = ? AND version = ?")
 
 @Where(clause = "deleted = false") // tutaj ustawiamy gdy chcemy wyswietlic tylko tych ktorzy sa zatudnieni albo nie
@@ -45,7 +40,6 @@ public class Teacher {
     private Set<Language> languages = new HashSet<>();
 
     @OneToMany(mappedBy = "teacher")
-//    @Where(clause = "fired = false")
     private Set<Student> students;
 
     @Version

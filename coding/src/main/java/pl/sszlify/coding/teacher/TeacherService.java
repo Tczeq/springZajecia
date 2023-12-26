@@ -19,20 +19,17 @@ public class TeacherService {
         return teacherRepository.findAll();
     }
 
+
+    @Transactional
     public void create(Teacher teacher) {
         teacherRepository.save(teacher);
     }
-
-//    public void deleteById(int idToDelete) {
-//        teacherRepository.deleteById(idToDelete);
-//    }
 
 
     @Transactional
     public void deleteById(int idToDelete) {
         teacherRepository.deleteById(idToDelete);
     }
-
 
 
     public List<Teacher> findAllByLanguage(Language language) {
@@ -44,13 +41,15 @@ public class TeacherService {
                 .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + teacherId + " not found"));
     }
 
-    public void fireTeacher(int teacherId){
+    @Transactional
+    public void fireTeacher(int teacherId) {
         Teacher teacher = findTeacherById(teacherId);
         teacher.setFired(true);
         teacherRepository.save(teacher);
 
     }
 
+    @Transactional
     public void hireTeacher(int teacherId) {
         Teacher teacher = findTeacherById(teacherId);
         teacher.setFired(false);
@@ -58,9 +57,10 @@ public class TeacherService {
     }
 
 
+    @Transactional
     public void update(Teacher updatedTeacher) {
-        Teacher existingTeacher = teacherRepository.findById(updatedTeacher.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Teacher with id " + updatedTeacher.getId() + " not found"));
+        Teacher existingTeacher = teacherRepository.findWithLockingById(updatedTeacher.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + updatedTeacher.getId() + " not found"));
 
         existingTeacher.setFirstName(updatedTeacher.getFirstName());
         existingTeacher.setLastName(updatedTeacher.getLastName());

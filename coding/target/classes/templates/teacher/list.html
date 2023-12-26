@@ -51,14 +51,12 @@
         </td>
 
 
-
         <td>
             <button th:value="${teacher.id}" onclick="fireTeacher(this.value)" th:if="${!teacher.fired}">ZWOLNIJ
             </button>
             <button th:value="${teacher.id}" onclick="hireTeacher(this.value)" th:if="${teacher.fired}">ZATRUDNIJ
             </button>
         </td>
-
 
 
     </tr>
@@ -114,8 +112,6 @@
             }
         });
     }
-
-
 
 
 </script>

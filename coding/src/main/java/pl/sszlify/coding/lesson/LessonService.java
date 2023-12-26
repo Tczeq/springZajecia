@@ -32,13 +32,16 @@ public class LessonService {
         if (term.isBefore(LocalDateTime.now())) {
             throw new InvalidDate("Term cannot be from the past ");
         }
-        Teacher teacher = teacherRepository.findWithLockingById(teacherId) // TODO: 06.12.2023 wywołanie powinno być z lockiem
+        Teacher teacher = teacherRepository.findWithLockingById(teacherId)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat
                         .format("Teacher with id={0} not found", teacherId)));
+        if (teacher.isFired()) {
+            throw new EntityNotFoundException("Teacher is fired");
+        }
         if (lessonRepository.existsByTeacherIdAndTermAfterAndTermBefore(teacherId, term.minusHours(1), term.plusHours(1))) {
             throw new InvalidDate("Term unavailable");
         }
-        Student student = studentRepository.findById(studentId)
+        Student student = studentRepository.findWithLockingById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat
                         .format("Student with id={0} not found", studentId)));
         lesson.setStudent(student);
@@ -51,9 +54,11 @@ public class LessonService {
                 .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + lessonId + " not found"));
     }
 
+
+    @Transactional
     public void update(Lesson updatedLesson) {
         Lesson existingLesson = lessonRepository.findById(updatedLesson.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Teacher with id " + updatedLesson.getId() + " not found") );
+                .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + updatedLesson.getId() + " not found"));
         existingLesson.setTerm(updatedLesson.getTerm());
         existingLesson.setTeacher(updatedLesson.getTeacher());
         existingLesson.setStudent(updatedLesson.getStudent());
@@ -62,6 +67,7 @@ public class LessonService {
     }
 
 
+    @Transactional
     public void deleteById(int idToDelete) {
         lessonRepository.deleteById(idToDelete);
     }
