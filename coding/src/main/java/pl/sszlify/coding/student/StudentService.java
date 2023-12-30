@@ -10,7 +10,6 @@ import pl.sszlify.coding.teacher.TeacherRepository;
 import pl.sszlify.coding.teacher.model.Teacher;
 
 import java.text.MessageFormat;
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -26,7 +25,7 @@ public class StudentService {
 
     @Transactional
     public void create(Student student, int teacherId){
-        Teacher teacher = teacherRepository.findWithLockingById(teacherId)
+        Teacher teacher = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat
                         .format("Teacher with id={0} not found", teacherId)));
         if (!teacher.getLanguages().contains(student.getLanguage())) {
@@ -46,24 +45,24 @@ public class StudentService {
         studentRepository.deleteById(idToDelete);
     }
 
-    public Student findStudentById(int studentId) {
+    public Student findById(int studentId) {
         return studentRepository.findById(studentId)
-                .orElseThrow(() -> new EntityNotFoundException("Student with id " + studentId + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Student with id=" + studentId + " not found"));
     }
 
 
-    @Transactional
-    public void deleteStudent(int studentId){
-        Student student = findStudentById(studentId);
-        student.setDeleted(true);
-        studentRepository.save(student);
-
-    }
+//    @Transactional
+//    public void deleteStudent(int studentId){
+//        Student student = findStudentById(studentId);
+//        student.setDeleted(true);
+//        studentRepository.save(student);
+//
+//    }
 
 
     @Transactional
     public void bringBackStudent(int studentId) {
-        Student student = findStudentById(studentId);
+        Student student = findById(studentId);
         student.setDeleted(false);
         studentRepository.save(student);
     }

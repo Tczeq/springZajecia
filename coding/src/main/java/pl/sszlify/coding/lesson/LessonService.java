@@ -41,7 +41,7 @@ public class LessonService {
         if (lessonRepository.existsByTeacherIdAndTermAfterAndTermBefore(teacherId, term.minusHours(1), term.plusHours(1))) {
             throw new InvalidDate("Term unavailable");
         }
-        Student student = studentRepository.findWithLockingById(studentId)
+        Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat
                         .format("Student with id={0} not found", studentId)));
         lesson.setStudent(student);

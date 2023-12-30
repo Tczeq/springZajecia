@@ -282,30 +282,61 @@ class TeacherServiceTest {
 
 
     @Test
-    void testCreate_HappyPath_ResultsInStudentBeingSaved() {
+    void testUpdate_HappyPath_ResultsInStudentBeingUpdated() {
         //given
         int teacherId = 3;
 
+        Teacher actualTeacher = Teacher.builder()
+                .id(teacherId)
+                .firstName("Test1")
+                .lastName("Testowy1")
+                .languages(Set.of(Language.C, Language.JS))
+                .build();
+
         Teacher toSave = Teacher.builder()
                 .id(teacherId)
-                .firstName("Test")
-                .lastName("Testowy")
-                .languages(Set.of(Language.JAVA, Language.JS))
+                .firstName("Test2")
+                .lastName("Testowy2")
+                .languages(Set.of(Language.JAVA, Language.PYTHON))
                 .build();
-        when(teacherRepository.findWithLockingById(teacherId)).thenReturn(Optional.of(toSave));
+
+
+        when(teacherRepository.findById(teacherId)).thenReturn(Optional.of(actualTeacher));
 
         //when
         teacherService.update(toSave);
 
         //then
-        verify(teacherRepository).findWithLockingById(teacherId);
-
+        verify(teacherRepository).findById(teacherId);
         verify(teacherRepository).save(teacherArgumentCaptor.capture());
+
         Teacher saved = teacherArgumentCaptor.getValue();
         assertEquals(toSave.getFirstName(), saved.getFirstName());
         assertEquals(toSave.getLastName(), saved.getLastName());
         assertEquals(toSave.getLanguages(), saved.getLanguages());
         assertEquals(teacherId, saved.getId());
+    }
+
+    @Test
+    void testUpdate_UnHappyPath_ResultsInStudentNotUpdated() {
+        //given
+        int teacherId = 3;
+        Teacher toUpdate = Teacher.builder()
+                .id(teacherId)
+                .firstName("Test2")
+                .lastName("Testowy2")
+                .languages(Set.of(Language.JAVA, Language.PYTHON))
+                .build();
+
+
+        when(teacherRepository.findById(teacherId)).thenReturn(Optional.empty());
+
+        //then
+        assertThrows(EntityNotFoundException.class, () -> {
+            //when
+            teacherService.update(toUpdate);
+        });
+
     }
 
 

@@ -4,23 +4,17 @@ package pl.sszlify.coding.lesson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.sszlify.coding.common.Language;
 import pl.sszlify.coding.lesson.exception.InvalidDate;
 import pl.sszlify.coding.lesson.model.Lesson;
-import pl.sszlify.coding.lesson.model.dto.LessonDto;
 import pl.sszlify.coding.student.StudentService;
 import pl.sszlify.coding.student.model.Student;
-import pl.sszlify.coding.student.model.dto.StudentDto;
 import pl.sszlify.coding.teacher.TeacherService;
 import pl.sszlify.coding.teacher.model.Teacher;
-import pl.sszlify.coding.teacher.model.dto.TeacherDto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -75,7 +69,7 @@ public class LessonController {
     @PostMapping("/update")
     public String updateLesson(Lesson lesson, @RequestParam int studentId, @RequestParam int teacherId) {
         Lesson existingLesson = lessonService.findLessonById(lesson.getId());
-        Student student = studentService.findStudentById(studentId);
+        Student student = studentService.findById(studentId);
         Teacher teacher = teacherService.findTeacherById(teacherId);
         existingLesson.setStudent(student);
         existingLesson.setTeacher(teacher);

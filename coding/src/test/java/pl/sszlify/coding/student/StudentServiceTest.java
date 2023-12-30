@@ -14,11 +14,12 @@ import pl.sszlify.coding.student.model.Student;
 import pl.sszlify.coding.teacher.TeacherRepository;
 import pl.sszlify.coding.teacher.model.Teacher;
 
+import java.text.MessageFormat;
 import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class) //zaprzęga do pracy Mockito (@Mock oraz @InjectMocks)
 class StudentServiceTest {
@@ -56,13 +57,13 @@ class StudentServiceTest {
         Teacher teacher = Teacher.builder()
                 .languages(Set.of(toSave.getLanguage()))
                 .build();
-        when(teacherRepository.findWithLockingById(teacherId)).thenReturn(Optional.of(teacher));
+        when(teacherRepository.findById(teacherId)).thenReturn(Optional.of(teacher));
 
         //when
         studentService.create(toSave, teacherId);
 
         //then
-        verify(teacherRepository).findWithLockingById(teacherId);
+        verify(teacherRepository).findById(teacherId);
 
         verify(studentRepository).save(studentArgumentCaptor.capture());
         Student saved = studentArgumentCaptor.getValue();
@@ -74,42 +75,50 @@ class StudentServiceTest {
 
 
     @Test
-    void testCreate_UnHappyPath_ResultsInStudentNotBeingSaved_WhenTeacherNotFound() {
+    void testCreate_TeacherNotFound_ResultsInEntityNotFoundException() {
         //given
         int teacherId = 2;
-        Student toSave = Student.builder()
-                .firstName("Test")
-                .lastName("Testowy")
-                .language(Language.JAVA)
-                .build();
-        when(teacherRepository.findWithLockingById(teacherId)).thenReturn(Optional.empty());
+        String exceptionMsg = MessageFormat.format("Teacher with id={0} not found", teacherId);
+        Student toSave = new Student();
+        when(teacherRepository.findById(teacherId)).thenReturn(Optional.empty());
 
-        //then
-        assertThrows(EntityNotFoundException.class, () -> {
-            //when
-            studentService.create(toSave, teacherId);
-        });
+        //when //then
+//        EntityNotFoundException exception = assertThrows(
+//                EntityNotFoundException.class, () -> studentService.create(toSave, teacherId));
+//        assertEquals(exceptionMsg, exception.getMessage());
+
+//        assertThrows(
+//                EntityNotFoundException.class,
+//                () -> studentService.create(toSave, teacherId),
+//                exceptionMsg);
+
+        assertThatExceptionOfType(EntityNotFoundException.class)
+                .isThrownBy(() -> studentService.create(toSave, teacherId))
+                .withMessage(exceptionMsg);
+
+        verify(teacherRepository).findById(teacherId);
+        verifyNoInteractions(studentRepository);
     }
 
     @Test
-    void testCreate_UnHappyPath_ResultsInStudentNotBeingSaved_WhenLanguageIsNotTheSame() {
+    void testCreate_LanguageMismatch_ResultsInLanguageMismatchException() {
         //given
         int teacherId = 2;
         Student toSave = Student.builder()
-                .firstName("Test")
-                .lastName("Testowy")
                 .language(Language.JAVA)
                 .build();
         Teacher teacher = Teacher.builder()
                 .languages(Set.of(Language.PYTHON))
                 .build();
-        when(teacherRepository.findWithLockingById(teacherId)).thenReturn(Optional.of(teacher));
+        when(teacherRepository.findById(teacherId)).thenReturn(Optional.of(teacher));
 
-        //then
-        assertThrows(LanguageMismatchException.class, () -> {
-            //when
-            studentService.create(toSave, teacherId);
-        });
+        //when //then
+        assertThatExceptionOfType(LanguageMismatchException.class)
+                .isThrownBy(() -> studentService.create(toSave, teacherId))
+                .withMessage(null); //todo: wypadałoby coś jednak zwracać jako komunikat
+
+        verify(teacherRepository).findById(teacherId);
+        verifyNoInteractions(studentRepository);
     }
 
     @Test
@@ -117,29 +126,37 @@ class StudentServiceTest {
         //given
         int studentId = 3;
         Student toFind = Student.builder()
+                .id(studentId)
                 .firstName("Test")
                 .lastName("Testowy")
                 .language(Language.JAVA)
                 .build();
         when(studentRepository.findById(studentId)).thenReturn(Optional.of(toFind));
+
         //when
-        studentService.findStudentById(studentId);
+        Student found = studentService.findById(studentId);
 
         //then
+        assertEquals(toFind.getId(), found.getId());
+        assertEquals(toFind.getFirstName(), found.getFirstName());
+        assertEquals(toFind.getLastName(), found.getLastName());
+
         verify(studentRepository).findById(studentId);
     }
 
     @Test
-    void testFindStudentById_UnHappyPath_ResultsInStudentNotFound() {
+    void testFindStudentById_StudentNotFound_ResultsInEntityNotFoundException() {
         //given
         int studentId = 3;
+        String exceptionMsg = MessageFormat.format("Student with id={0} not found", studentId);
         when(studentRepository.findById(studentId)).thenReturn(Optional.empty());
 
-        //then
-        assertThrows(EntityNotFoundException.class, () -> {
-            //when
-            studentService.findStudentById(studentId);
-        });
+        //when //then
+        assertThatExceptionOfType(EntityNotFoundException.class)
+                .isThrownBy(() -> studentService.findById(studentId))
+                .withMessage(exceptionMsg);
+
+        verify(studentRepository).findById(studentId);
     }
 
     @Test
@@ -160,24 +177,25 @@ class StudentServiceTest {
         verify(studentRepository).save(studentArgumentCaptor.capture());
         Student saved = studentArgumentCaptor.getValue();
 
-
         assertEquals(toFind.getFirstName(), saved.getFirstName());
         assertEquals(toFind.getLastName(), saved.getLastName());
         assertEquals(toFind.getLanguage(), saved.getLanguage());
+        assertFalse(saved.isDeleted());
     }
 
 
     @Test
-    void testBringBackStudent_UnHappyPath_ResultsInStudentNotBroughtBack() {
+
+    void testBringBackStudent_StudentNotBroughtBack_ResultsInEntityNotFoundException() {
         int studentId = 3;
+        String exceptionMsg = MessageFormat.format("Student with id={0} not found", studentId);
 
         when(studentRepository.findById(studentId)).thenReturn(Optional.empty());
 
-        //then
-        assertThrows(EntityNotFoundException.class, () -> {
-            //when
-            studentService.bringBackStudent(studentId);
-        });
+        //when //then
+        assertThatExceptionOfType(EntityNotFoundException.class)
+                .isThrownBy(() -> studentService.bringBackStudent(studentId))
+                .withMessage(exceptionMsg);
     }
 
 
@@ -207,7 +225,7 @@ class StudentServiceTest {
     }
 
     @Test
-    void testFindStudentByTeacher_UnHappyPath_ResultsInStudentNotFound() {
+    void testFindStudentByTeacher_StudentNotFound_ResultsInStudentNotFound() {
         //given
         Student toFind = Student.builder()
                 .firstName("Test")
@@ -235,30 +253,28 @@ class StudentServiceTest {
 
     @Test
     void testDeleteById_HappyPath_ResultsInStudentFound() {
+        //given
         int studentId = 3;
-
+        //when
         studentService.deleteById(studentId);
-
+        //then
         verify(studentRepository).deleteById(studentId);
-
     }
 
     @Test
-    void testDeleteById_UnHappyPath_ResultsInStudentNotFound() {
+    void testDeleteById_StudentNotFound_ResultsInEntityNotFoundException() {
         int studentId = 3;
+        String exceptionMsg = MessageFormat.format("Student with id={0} not found", studentId);
 
         when(studentRepository.findById(studentId)).thenReturn(Optional.empty());
 
         studentService.deleteById(studentId);
 
-        //then
-        assertThrows(EntityNotFoundException.class, () -> {
-            //when
-            studentService.findStudentById(studentId);
-        });
+        assertThatExceptionOfType(EntityNotFoundException.class)
+                .isThrownBy(() -> studentService.findById(studentId))
+                .withMessage(exceptionMsg);
 
         verify(studentRepository).deleteById(studentId);
-
     }
 
 
@@ -283,7 +299,7 @@ class StudentServiceTest {
 
 
     @Test
-    void testFindAll_UnHappyPath_ResultsInStudentNotFoundAllStudents() {
+    void testFindAll_NotFoundAll_ResultsInStudentNotFoundAllStudents() {
         //given
         Student toFind = Student.builder()
                 .firstName("Test")
