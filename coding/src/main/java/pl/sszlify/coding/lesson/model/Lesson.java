@@ -19,7 +19,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
-@SQLDelete(sql = "UPDATE lesson SET deleted = 1 WHERE id = ?")
+//@SQLDelete(sql = "UPDATE lesson SET deleted = 1 WHERE id = ?")
+@SQLDelete(sql = "UPDATE lesson SET deleted = 1 WHERE id = ? AND deleted = ?")
 @Where(clause = "deleted = false")
 public class Lesson {
     @Id

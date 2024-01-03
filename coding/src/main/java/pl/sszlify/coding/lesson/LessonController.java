@@ -1,26 +1,23 @@
 package pl.sszlify.coding.lesson;
 
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pl.sszlify.coding.common.Language;
 import pl.sszlify.coding.lesson.exception.InvalidDate;
 import pl.sszlify.coding.lesson.model.Lesson;
-import pl.sszlify.coding.lesson.model.dto.LessonDto;
 import pl.sszlify.coding.student.StudentService;
 import pl.sszlify.coding.student.model.Student;
-import pl.sszlify.coding.student.model.dto.StudentDto;
 import pl.sszlify.coding.teacher.TeacherService;
 import pl.sszlify.coding.teacher.model.Teacher;
-import pl.sszlify.coding.teacher.model.dto.TeacherDto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -46,59 +43,58 @@ public class LessonController {
     }
 
 
-
-
     /*
-    * Dodaje tutaj Model, aby mozna bylo po froncie wyswietlac wiadomosci
-    * */
+     * Dodaje tutaj Model, aby mozna bylo po froncie wyswietlac wiadomosci
+     * */
     @PostMapping("/create")
     public String create(Lesson lesson, @RequestParam int teacherId, @RequestParam int studentId, Model model) {
-//        if (lesson.getTerm().isBefore(LocalDateTime.now())) {
-//            return modelForCreateLesson(model, "Data nie może być z przeszłości");
-//        }
-//
-//        if (!lessonService.availableTerm(lesson.getTerm(), lesson.getTeacher())) {
-//            return modelForCreateLesson(model,"Nauczyciel jest już zajęty w tym terminie");
-//        }
-//        model.addAttribute("today", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-//        model.addAttribute("languages", Language.values());
-//        model.addAttribute("errorMessage", "Data nie może być z przeszłości");
-//        return "lesson/form";
-
-
         try {
-
             lessonService.create(lesson, teacherId, studentId);
             return "redirect:/lessons";
         } catch (InvalidDate e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "lesson/form";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "redirect:/lessons";
         }
 
-
     }
 
 
-    private String modelForCreateLesson(Model model, String message) {
-        model.addAttribute("today", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-        model.addAttribute("languages", Language.values());
-        model.addAttribute("errorMessage", message);
-        return "lesson/form";
+    @GetMapping("/update/{id}")
+    public String getUpdateForm(@PathVariable("id") int lessonId, Model model) {
+        Lesson lesson = lessonService.findLessonById(lessonId);
+        model.addAttribute("lesson", lesson);
+//        model.addAttribute("teachers", teacherService.findAll());
+//        model.addAttribute("students", studentService.findAll());
+        return "lesson/update";
     }
 
-//    @GetMapping(params = "teacher")
-//    @ResponseBody
-//    public List<StudentDto> getStudentsByTeacher(@RequestParam Teacher teacher) {
-//        return studentService.findStudentsByTeacher(teacher).stream()
-//                .map(StudentDto::fromEntity)
-//                .toList();
-//    }
+
+    @PostMapping("/update")
+    public String updateLesson(Lesson lesson) {
+//        Lesson existingLesson = lessonService.findLessonById(lesson.getId());
+//        Student student = studentService.findById(studentId);
+//        Teacher teacher = teacherService.findTeacherById(teacherId);
+//        existingLesson.setStudent(student);
+//        existingLesson.setTeacher(teacher);
+//        existingLesson.setTerm(lesson.getTerm());
+        lessonService.update(lesson);
+        return "redirect:/lessons";
+    }
+
 
     @DeleteMapping
     @ResponseBody
     public void deleteById(@RequestParam int idToDelete) {
+        Lesson lesson = lessonService.findLessonById(idToDelete);
+        if(lesson.getTerm().isBefore(LocalDateTime.now()) && lesson.getTerm().plusHours(1).isAfter(LocalDateTime.now())) {
+            throw new InvalidDate("Lesson already started");
+        }
         lessonService.deleteById(idToDelete);
     }
+
 
 
 }

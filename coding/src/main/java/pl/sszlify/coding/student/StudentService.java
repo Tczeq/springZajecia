@@ -3,13 +3,15 @@ package pl.sszlify.coding.student;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.sszlify.coding.common.exception.LanguageMismatchException;
 import pl.sszlify.coding.student.model.Student;
+import pl.sszlify.coding.student.model.dto.StudentDto;
 import pl.sszlify.coding.teacher.TeacherRepository;
+import pl.sszlify.coding.teacher.TeacherService;
 import pl.sszlify.coding.teacher.model.Teacher;
 
 import java.text.MessageFormat;
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -23,6 +25,7 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
+    @Transactional
     public void create(Student student, int teacherId){
         Teacher teacher = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat
@@ -34,7 +37,40 @@ public class StudentService {
         studentRepository.save(student);
     }
 
-    public List<Student> findStudentsByTeacher(Teacher teacher) {
-        return studentRepository.findAllByTeacher(teacher);
+    public List<StudentDto> findStudentsByTeacher(int teacherId) {
+        Teacher teacher = teacherRepository.findById(teacherId)
+                .orElseThrow(() -> new EntityNotFoundException("Teacher with id=" + teacherId + " not found"));
+        return studentRepository.findAllByTeacher(teacher).stream()
+                .map(StudentDto::fromEntity)
+                .toList();
+    }
+
+
+
+    @Transactional
+    public void deleteById(int idToDelete) {
+        studentRepository.deleteById(idToDelete);
+    }
+
+    public Student findById(int studentId) {
+        return studentRepository.findById(studentId)
+                .orElseThrow(() -> new EntityNotFoundException("Student with id=" + studentId + " not found"));
+    }
+
+
+//    @Transactional
+//    public void deleteStudent(int studentId){
+//        Student student = findStudentById(studentId);
+//        student.setDeleted(true);
+//        studentRepository.save(student);
+//
+//    }
+
+
+    @Transactional
+    public void bringBackStudent(int studentId) {
+        Student student = findById(studentId);
+        student.setDeleted(false);
+        studentRepository.save(student);
     }
 }

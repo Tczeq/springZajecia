@@ -4,11 +4,14 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import pl.sszlify.coding.lesson.exception.InvalidDate;
 import pl.sszlify.coding.lesson.model.Lesson;
 import pl.sszlify.coding.student.StudentRepository;
+import pl.sszlify.coding.student.StudentService;
 import pl.sszlify.coding.student.model.Student;
 import pl.sszlify.coding.teacher.TeacherRepository;
+import pl.sszlify.coding.teacher.TeacherService;
 import pl.sszlify.coding.teacher.model.Teacher;
 
 import java.text.MessageFormat;
@@ -19,9 +22,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LessonService {
     private final LessonRepository lessonRepository;
+//    private final LessonService lessonService;
     private final TeacherRepository teacherRepository;
     private final StudentRepository studentRepository;
-
+    private final StudentService studentService;
+    private final TeacherService teacherService;
     public List<Lesson> findAll() {
         return lessonRepository.findAll();
     }
@@ -32,9 +37,12 @@ public class LessonService {
         if (term.isBefore(LocalDateTime.now())) {
             throw new InvalidDate("Term cannot be from the past ");
         }
-        Teacher teacher = teacherRepository.findWithLockingById(teacherId) // TODO: 06.12.2023 wywołanie powinno być z lockiem
+        Teacher teacher = teacherRepository.findWithLockingById(teacherId)
                 .orElseThrow(() -> new EntityNotFoundException(MessageFormat
                         .format("Teacher with id={0} not found", teacherId)));
+        if (teacher.isFired()) {
+            throw new EntityNotFoundException("Teacher is fired");
+        }
         if (lessonRepository.existsByTeacherIdAndTermAfterAndTermBefore(teacherId, term.minusHours(1), term.plusHours(1))) {
             throw new InvalidDate("Term unavailable");
         }
@@ -46,8 +54,35 @@ public class LessonService {
         lessonRepository.save(lesson);
     }
 
+    public Lesson findLessonById(int lessonId) {
+        return lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + lessonId + " not found"));
+    }
 
+
+    @Transactional
+    public void update(Lesson updatedLesson) {
+        Lesson existingLesson = lessonRepository.findById(updatedLesson.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Lesson with id " + updatedLesson.getId() + " not found"));
+
+
+//        Student student = studentService.findById(studentId);
+//        Teacher teacher = teacherService.findTeacherById(teacherId);
+
+//        existingLesson.setTerm(updatedLesson.getTerm());
+//        existingLesson.setTeacher(updatedLesson.getTeacher());
+//        existingLesson.setStudent(updatedLesson.getStudent());
+//        existingLesson.setStudent(student);
+//        existingLesson.setTeacher(teacher);
+        existingLesson.setTerm(updatedLesson.getTerm());
+
+        lessonRepository.save(existingLesson);
+    }
+
+
+    @Transactional
     public void deleteById(int idToDelete) {
+
         lessonRepository.deleteById(idToDelete);
     }
 }
