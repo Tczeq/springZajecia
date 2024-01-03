@@ -17,6 +17,7 @@
 
     <input type="datetime-local" name="term" th:value="${lesson != null ? lesson.term : ''}" th:min="${today}" required>
     <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
     </br></br>
 
     <label>Nauczyciel</label><br>
@@ -40,6 +41,7 @@
                 th:text="${student?.firstName} + ' ' + ${student?.lastName}"
                 th:selected="${lesson != null and lesson.student?.id == student.id}">
         </option>
+
     </select>
 
     </br>

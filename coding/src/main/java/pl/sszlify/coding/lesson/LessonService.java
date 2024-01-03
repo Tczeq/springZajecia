@@ -4,11 +4,14 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import pl.sszlify.coding.lesson.exception.InvalidDate;
 import pl.sszlify.coding.lesson.model.Lesson;
 import pl.sszlify.coding.student.StudentRepository;
+import pl.sszlify.coding.student.StudentService;
 import pl.sszlify.coding.student.model.Student;
 import pl.sszlify.coding.teacher.TeacherRepository;
+import pl.sszlify.coding.teacher.TeacherService;
 import pl.sszlify.coding.teacher.model.Teacher;
 
 import java.text.MessageFormat;
@@ -19,9 +22,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LessonService {
     private final LessonRepository lessonRepository;
+//    private final LessonService lessonService;
     private final TeacherRepository teacherRepository;
     private final StudentRepository studentRepository;
-
+    private final StudentService studentService;
+    private final TeacherService teacherService;
     public List<Lesson> findAll() {
         return lessonRepository.findAll();
     }
@@ -58,10 +63,18 @@ public class LessonService {
     @Transactional
     public void update(Lesson updatedLesson) {
         Lesson existingLesson = lessonRepository.findById(updatedLesson.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + updatedLesson.getId() + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Lesson with id " + updatedLesson.getId() + " not found"));
+
+
+//        Student student = studentService.findById(studentId);
+//        Teacher teacher = teacherService.findTeacherById(teacherId);
+
+//        existingLesson.setTerm(updatedLesson.getTerm());
+//        existingLesson.setTeacher(updatedLesson.getTeacher());
+//        existingLesson.setStudent(updatedLesson.getStudent());
+//        existingLesson.setStudent(student);
+//        existingLesson.setTeacher(teacher);
         existingLesson.setTerm(updatedLesson.getTerm());
-        existingLesson.setTeacher(updatedLesson.getTeacher());
-        existingLesson.setStudent(updatedLesson.getStudent());
 
         lessonRepository.save(existingLesson);
     }
@@ -69,6 +82,7 @@ public class LessonService {
 
     @Transactional
     public void deleteById(int idToDelete) {
+
         lessonRepository.deleteById(idToDelete);
     }
 }

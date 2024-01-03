@@ -334,7 +334,7 @@ class LessonServiceTest {
     }
 
     @Test
-    void testUpdate_HappyPath_ResultsInStudentBeingUpdated() {
+    void testUpdate_HappyPath_ResultsInLessonBeingUpdated() {
         //given
         int lessonId = 3;
         LocalDateTime term = LocalDateTime.of(2023, 12, 30, 12, 12);
@@ -365,7 +365,7 @@ class LessonServiceTest {
     }
 
     @Test
-    void testUpdate_UnHappyPath_ResultsInStudentNotUpdated() {
+    void testUpdate_UnHappyPath_ResultsInLessonNotUpdated() {
         //given
         int lessonId = 3;
         LocalDateTime term = LocalDateTime.of(2023, 12, 30, 12, 12);

@@ -1,7 +1,10 @@
 package pl.sszlify.coding.lesson;
 
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +54,9 @@ public class LessonController {
         } catch (InvalidDate e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "lesson/form";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "redirect:/lessons";
         }
 
     }
@@ -60,21 +66,21 @@ public class LessonController {
     public String getUpdateForm(@PathVariable("id") int lessonId, Model model) {
         Lesson lesson = lessonService.findLessonById(lessonId);
         model.addAttribute("lesson", lesson);
-        model.addAttribute("teachers", teacherService.findAll());
-        model.addAttribute("students", studentService.findAll());
-        return "lesson/form";
+//        model.addAttribute("teachers", teacherService.findAll());
+//        model.addAttribute("students", studentService.findAll());
+        return "lesson/update";
     }
 
 
     @PostMapping("/update")
-    public String updateLesson(Lesson lesson, @RequestParam int studentId, @RequestParam int teacherId) {
-        Lesson existingLesson = lessonService.findLessonById(lesson.getId());
-        Student student = studentService.findById(studentId);
-        Teacher teacher = teacherService.findTeacherById(teacherId);
-        existingLesson.setStudent(student);
-        existingLesson.setTeacher(teacher);
-        existingLesson.setTerm(lesson.getTerm());
-        lessonService.update(existingLesson);
+    public String updateLesson(Lesson lesson) {
+//        Lesson existingLesson = lessonService.findLessonById(lesson.getId());
+//        Student student = studentService.findById(studentId);
+//        Teacher teacher = teacherService.findTeacherById(teacherId);
+//        existingLesson.setStudent(student);
+//        existingLesson.setTeacher(teacher);
+//        existingLesson.setTerm(lesson.getTerm());
+        lessonService.update(lesson);
         return "redirect:/lessons";
     }
 
@@ -88,6 +94,7 @@ public class LessonController {
         }
         lessonService.deleteById(idToDelete);
     }
+
 
 
 }

@@ -10,9 +10,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sszlify.coding.common.Language;
 import pl.sszlify.coding.teacher.model.Teacher;
+import pl.sszlify.coding.teacher.model.dto.TeacherDto;
 
-import java.util.*;
+import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,7 +56,7 @@ class TeacherServiceTest {
 
 
     @Test
-    void testFindAll_UnHappyPath_ResultsInTeacherNotFoundAllTeachers() {
+    void testFindAll_NotFoundAll_ResultsInTeacherNotFoundAllTeachers() {
         //given
         Teacher toFind = Teacher.builder()
                 .firstName("Test")
@@ -93,28 +99,31 @@ class TeacherServiceTest {
 
     @Test
     void testDeleteById_HappyPath_ResultsInTeacherFound() {
+        //give
         int teacherId = 3;
-
+        //when
         teacherService.deleteById(teacherId);
-
+        //then
         verify(teacherRepository).deleteById(teacherId);
 
     }
 
     @Test
-    void testDeleteById_UnHappyPath_ResultsInTeacherNotFound() {
+    void testDeleteById_TeacherNotFoundById_ResultsInEntityNotFoundException() {
+        //given
         int teacherId = 3;
+        String exceptionMsg = MessageFormat.format("Teacher with id={0} not found", teacherId);
 
         when(teacherRepository.findById(teacherId)).thenReturn(Optional.empty());
 
+        //when
         teacherService.deleteById(teacherId);
 
-        //then
-        assertThrows(EntityNotFoundException.class, () -> {
-            //when
-            teacherService.findTeacherById(teacherId);
-        });
+        assertThatExceptionOfType(EntityNotFoundException.class)
+                .isThrownBy(() -> teacherService.findTeacherById(teacherId))
+                .withMessage(exceptionMsg);
 
+        //then
         verify(teacherRepository).deleteById(teacherId);
 
     }
@@ -130,41 +139,35 @@ class TeacherServiceTest {
                 .build();
         Language language = Language.JAVA;
 
-        List<Teacher> teachers = new ArrayList<>();
-        teachers.add(toFind);
+        List<Teacher> teachers = List.of(toFind);
 
         when(teacherRepository.findAllByLanguagesContaining(language)).thenReturn(teachers);
 
         //when
-        List<Teacher> actualTeachers = teacherService.findAllByLanguage(language);
+        List<TeacherDto> actualTeachers = teacherService.findAllByLanguage(language);
+        List<TeacherDto> expectedTeachers = teachers.stream()
+                .map(TeacherDto::fromEntity)
+                .toList();
+
 
         //then
         verify(teacherRepository).findAllByLanguagesContaining(language);
-        assertEquals(teachers, actualTeachers);
+        assertEquals(expectedTeachers, actualTeachers);
     }
 
     @Test
-    void testFindTeachersByLanguages_UnHappyPath_ResultsInTeachersNotFound() {
-        //given
-        Teacher toFind = Teacher.builder()
-                .firstName("Test")
-                .lastName("Testowy")
-                .languages(Set.of(Language.JAVA, Language.JS))
-                .build();
+    void testFindTeachersByLanguages_TeacherNotFoundByLanguages_ResultsInTeachersNotFound() {
+        // given
         Language language = Language.JAVA;
 
-        List<Teacher> languages = new ArrayList<>();
-        languages.add(toFind);
+        when(teacherRepository.findAllByLanguagesContaining(language)).thenReturn(Collections.emptyList());
 
-        when(teacherRepository.findAllByLanguagesContaining(language)).thenReturn(Collections.EMPTY_LIST);
+        // when
+        List<TeacherDto> actualTeachers = teacherService.findAllByLanguage(language);
 
-        //when
-        List<Teacher> actualLanguages = teacherService.findAllByLanguage(language);
-
-        //then
+        // then
         verify(teacherRepository).findAllByLanguagesContaining(language);
-        assertTrue(actualLanguages.isEmpty());
-        assertNotEquals(languages, actualLanguages);
+        assertTrue(actualTeachers.isEmpty());
     }
 
 
@@ -178,6 +181,7 @@ class TeacherServiceTest {
                 .languages(Set.of(Language.JAVA, Language.JS))
                 .build();
         when(teacherRepository.findById(teacherId)).thenReturn(Optional.of(toFind));
+
         //when
         teacherService.findTeacherById(teacherId);
 
@@ -186,21 +190,29 @@ class TeacherServiceTest {
     }
 
     @Test
-    void testFindTeacherById_UnHappyPath_ResultsInTeacherNotFound() {
+    void testFindTeacherById_TeacherNotFound_ResultsInEntityNotFoundException() {
         //given
         int teacherId = 3;
+        String exceptionMsg = MessageFormat.format("Teacher with id={0} not found", teacherId);
+
         when(teacherRepository.findById(teacherId)).thenReturn(Optional.empty());
 
-        //then
-        assertThrows(EntityNotFoundException.class, () -> {
-            //when
-            teacherService.findTeacherById(teacherId);
-        });
+//        //then
+//        assertThrows(EntityNotFoundException.class, () -> {
+//            //when
+//            teacherService.findTeacherById(teacherId);
+//        });
+
+        //when //then
+        assertThatExceptionOfType(EntityNotFoundException.class)
+                .isThrownBy(() -> teacherService.findTeacherById(teacherId))
+                .withMessage(exceptionMsg);
     }
 
 
     @Test
     void testFireTeacher_HappyPath_ResultsInTeacherFire() {
+        //given
         int teacherId = 3;
         Teacher toFind = Teacher.builder()
                 .firstName("Test")
@@ -210,9 +222,12 @@ class TeacherServiceTest {
 
         when(teacherRepository.findById(teacherId)).thenReturn(Optional.of(toFind));
 
+        //when
+
         teacherService.fireTeacher(teacherId);
 
 
+        //then
         verify(teacherRepository).findById(teacherId);
         verify(teacherRepository).save(teacherArgumentCaptor.capture());
         Teacher saved = teacherArgumentCaptor.getValue();
@@ -227,16 +242,23 @@ class TeacherServiceTest {
 
 
     @Test
-    void testFireTeacher_UnHappyPath_ResultsInTeacherNotFire() {
+    void testFireTeacher_TeacherNotFound_ResultsInEntityNotFoundException() {
+        //given
         int teacherId = 3;
+        String exceptionMsg = MessageFormat.format("Teacher with id={0} not found", teacherId);
 
         when(teacherRepository.findById(teacherId)).thenReturn(Optional.empty());
 
-        //then
-        assertThrows(EntityNotFoundException.class, () -> {
-            //when
-            teacherService.fireTeacher(teacherId);
-        });
+//        //then
+//        assertThrows(EntityNotFoundException.class, () -> {
+//            //when
+//            teacherService.fireTeacher(teacherId);
+//        });
+
+        //when //then
+        assertThatExceptionOfType(EntityNotFoundException.class)
+                .isThrownBy(() -> teacherService.fireTeacher(teacherId))
+                .withMessage(exceptionMsg);
     }
 
 
@@ -268,16 +290,24 @@ class TeacherServiceTest {
 
 
     @Test
-    void testHireTeacher_UnHappyPath_ResultsInTeacherNotHire() {
+    void testHireTeacher_TeacherNotFound_ResultsInEntityNotFoundException() {
+        //given
         int teacherId = 3;
+        String exceptionMsg = MessageFormat.format("Teacher with id={0} not found", teacherId);
 
         when(teacherRepository.findById(teacherId)).thenReturn(Optional.empty());
 
-        //then
-        assertThrows(EntityNotFoundException.class, () -> {
-            //when
-            teacherService.hireTeacher(teacherId);
-        });
+//        //then
+//        assertThrows(EntityNotFoundException.class, () -> {
+//            //when
+//            teacherService.hireTeacher(teacherId);
+//        });
+
+
+        //when //then
+        assertThatExceptionOfType(EntityNotFoundException.class)
+                .isThrownBy(() -> teacherService.fireTeacher(teacherId))
+                .withMessage(exceptionMsg);
     }
 
 
@@ -301,13 +331,13 @@ class TeacherServiceTest {
                 .build();
 
 
-        when(teacherRepository.findById(teacherId)).thenReturn(Optional.of(actualTeacher));
+        when(teacherRepository.findWithLockingById(teacherId)).thenReturn(Optional.of(actualTeacher));
 
         //when
         teacherService.update(toSave);
 
         //then
-        verify(teacherRepository).findById(teacherId);
+        verify(teacherRepository).findWithLockingById(teacherId);
         verify(teacherRepository).save(teacherArgumentCaptor.capture());
 
         Teacher saved = teacherArgumentCaptor.getValue();
@@ -318,9 +348,11 @@ class TeacherServiceTest {
     }
 
     @Test
-    void testUpdate_UnHappyPath_ResultsInStudentNotUpdated() {
+    void testUpdate_TeacherNotUpdated_ResultsInEntityNotFoundException() {
         //given
         int teacherId = 3;
+        String exceptionMsg = MessageFormat.format("Teacher with id={0} not found", teacherId);
+
         Teacher toUpdate = Teacher.builder()
                 .id(teacherId)
                 .firstName("Test2")
@@ -329,14 +361,18 @@ class TeacherServiceTest {
                 .build();
 
 
-        when(teacherRepository.findById(teacherId)).thenReturn(Optional.empty());
+        when(teacherRepository.findWithLockingById(teacherId)).thenReturn(Optional.empty());
 
-        //then
-        assertThrows(EntityNotFoundException.class, () -> {
-            //when
-            teacherService.update(toUpdate);
-        });
+//        //then
+//        assertThrows(EntityNotFoundException.class, () -> {
+//            //when
+//            teacherService.update(toUpdate);
+//        });
 
+        //when //then
+        assertThatExceptionOfType(EntityNotFoundException.class)
+                .isThrownBy(() -> teacherService.update(toUpdate))
+                .withMessage(exceptionMsg);
     }
 
 

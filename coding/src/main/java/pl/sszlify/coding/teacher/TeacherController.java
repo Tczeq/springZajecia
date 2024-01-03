@@ -59,9 +59,10 @@ public class TeacherController {
     @GetMapping(params = "language")
     @ResponseBody
     public List<TeacherDto> getAll(@RequestParam Language language) {
-        return teacherService.findAllByLanguage(language).stream()
-                .map(TeacherDto::fromEntity)
-                .toList();
+//        return teacherService.findAllByLanguage(language).stream()
+//                .map(TeacherDto::fromEntity)
+//                .toList();
+        return teacherService.findAllByLanguage(language);
     }
 
 

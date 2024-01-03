@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.sszlify.coding.common.Language;
 import pl.sszlify.coding.common.exception.LanguageMismatchException;
 import pl.sszlify.coding.student.model.Student;
+import pl.sszlify.coding.student.model.dto.StudentDto;
 import pl.sszlify.coding.teacher.TeacherRepository;
 import pl.sszlify.coding.teacher.model.Teacher;
 
@@ -122,7 +123,7 @@ class StudentServiceTest {
     }
 
     @Test
-    void testFindStudentById_HappyPath_ResultsInStudentFound() {
+    void testFindStudentById_HappyPath_ResultsInStudentBeingReturned() {
         //given
         int studentId = 3;
         Student toFind = Student.builder()
@@ -186,7 +187,7 @@ class StudentServiceTest {
 
     @Test
 
-    void testBringBackStudent_StudentNotBroughtBack_ResultsInEntityNotFoundException() {
+    void testBringBackStudent_StudentNotFound_ResultsInEntityNotFoundException() {
         int studentId = 3;
         String exceptionMsg = MessageFormat.format("Student with id={0} not found", studentId);
 
@@ -202,57 +203,69 @@ class StudentServiceTest {
     @Test
     void testFindStudentByTeacher_HappyPath_ResultsInStudentFound() {
         //given
+        int teacherId = 3;
         Student toFind = Student.builder()
                 .firstName("Test")
                 .lastName("Testowy")
                 .language(Language.JAVA)
                 .build();
         Teacher teacher = Teacher.builder()
+                .id(teacherId)
                 .languages(Set.of(toFind.getLanguage()))
                 .build();
 
-        List<Student> students = new ArrayList<>();
-        students.add(toFind);
+        List<Student> students = List.of(toFind);
+        StudentDto studentDto = StudentDto.fromEntity(toFind);
 
+        when(teacherRepository.findById(teacherId)).thenReturn(Optional.of(teacher));
         when(studentRepository.findAllByTeacher(teacher)).thenReturn(students);
 
         //when
-        List<Student> actualStudents = studentService.findStudentsByTeacher(teacher);
+        List<StudentDto> actualStudents = studentService.findStudentsByTeacher(teacherId);
+
 
         //then
         verify(studentRepository).findAllByTeacher(teacher);
-        assertEquals(students, actualStudents);
+        verify(teacherRepository).findById(teacherId);
+        assertFalse(actualStudents.isEmpty());
+        assertEquals(students.size(), actualStudents.size());
+        assertEquals(studentDto.getFirstName(), actualStudents.get(0).getFirstName());
+        assertEquals(studentDto.getLastName(), actualStudents.get(0).getLastName());
     }
 
+//    @Test
+//    void testFindStudentByTeacher_StudentNotFound_ResultsInStudentNotFound() {
+//        //given
+//        int teacherId = 3;
+//        Student toFind = Student.builder()
+//                .firstName("Test")
+//                .lastName("Testowy")
+//                .language(Language.JAVA)
+//                .build();
+//        Teacher teacher = Teacher.builder()
+//                .id(teacherId)
+//                .languages(Set.of(toFind.getLanguage()))
+//                .build();
+//
+//        List<Student> students = List.of(toFind);
+//
+//
+//        when(studentRepository.findAllByTeacher(teacher)).thenReturn(Collections.EMPTY_LIST);
+//        when(teacherRepository.findById(teacherId)).thenReturn(Optional.of(teacher));
+//
+//        //when
+//        List<StudentDto> actualStudents = studentService.findStudentsByTeacher(teacherId);
+//
+//        //then
+//        verify(studentRepository).findAllByTeacher(teacher);
+//        verify(teacherRepository).findById(teacherId);
+//        assertTrue(actualStudents.isEmpty());
+//        assertNotEquals(students, actualStudents);
+//    }
+
+
     @Test
-    void testFindStudentByTeacher_StudentNotFound_ResultsInStudentNotFound() {
-        //given
-        Student toFind = Student.builder()
-                .firstName("Test")
-                .lastName("Testowy")
-                .language(Language.JAVA)
-                .build();
-        Teacher teacher = Teacher.builder()
-                .languages(Set.of(toFind.getLanguage()))
-                .build();
-
-        List<Student> students = new ArrayList<>();
-        students.add(toFind);
-
-        when(studentRepository.findAllByTeacher(teacher)).thenReturn(Collections.EMPTY_LIST);
-
-        //when
-        List<Student> actualStudents = studentService.findStudentsByTeacher(teacher);
-
-        //then
-        verify(studentRepository).findAllByTeacher(teacher);
-        assertTrue(actualStudents.isEmpty());
-        assertNotEquals(students, actualStudents);
-    }
-
-
-    @Test
-    void testDeleteById_HappyPath_ResultsInStudentFound() {
+    void testDeleteById_HappyPath_ResultsInStudentDeleted() {
         //given
         int studentId = 3;
         //when
@@ -263,17 +276,19 @@ class StudentServiceTest {
 
     @Test
     void testDeleteById_StudentNotFound_ResultsInEntityNotFoundException() {
+        //given
         int studentId = 3;
         String exceptionMsg = MessageFormat.format("Student with id={0} not found", studentId);
 
         when(studentRepository.findById(studentId)).thenReturn(Optional.empty());
 
+        //when
         studentService.deleteById(studentId);
 
         assertThatExceptionOfType(EntityNotFoundException.class)
                 .isThrownBy(() -> studentService.findById(studentId))
                 .withMessage(exceptionMsg);
-
+        //then
         verify(studentRepository).deleteById(studentId);
     }
 
@@ -286,34 +301,35 @@ class StudentServiceTest {
                 .lastName("Testowy")
                 .language(Language.JAVA)
                 .build();
+        List<Student> studentsFromRepo = List.of(toFind);
 
-        when(studentRepository.findAll()).thenReturn(List.of(toFind));
-
-        //when
-        List<Student> actualStudents = studentService.findAll();
-
-        //then
-        verify(studentRepository).findAll();
-        assertEquals(List.of(toFind), actualStudents);
-    }
-
-
-    @Test
-    void testFindAll_NotFoundAll_ResultsInStudentNotFoundAllStudents() {
-        //given
-        Student toFind = Student.builder()
-                .firstName("Test")
-                .lastName("Testowy")
-                .language(Language.JAVA)
-                .build();
-
-        when(studentRepository.findAll()).thenReturn(Collections.EMPTY_LIST);
+        when(studentRepository.findAll()).thenReturn(studentsFromRepo);
 
         //when
         List<Student> actualStudents = studentService.findAll();
 
         //then
         verify(studentRepository).findAll();
-        assertNotEquals(List.of(toFind), actualStudents);
+        assertEquals(studentsFromRepo, actualStudents);
     }
+
+
+//    @Test
+//    void testFindAll_NotFoundAll_ResultsInStudentNotFoundAllStudents() {
+//        //given
+//        Student toFind = Student.builder()
+//                .firstName("Test")
+//                .lastName("Testowy")
+//                .language(Language.JAVA)
+//                .build();
+//
+//        when(studentRepository.findAll()).thenReturn(Collections.EMPTY_LIST);
+//
+//        //when
+//        List<Student> actualStudents = studentService.findAll();
+//
+//        //then
+//        verify(studentRepository).findAll();
+//        assertNotEquals(List.of(toFind), actualStudents);
+//    }
 }

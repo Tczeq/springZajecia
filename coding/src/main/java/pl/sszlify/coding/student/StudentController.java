@@ -42,10 +42,11 @@ public class StudentController {
     @GetMapping(params = "teacher")
     @ResponseBody
     public List<StudentDto> getStudentsByTeacher(@RequestParam("teacher") int teacherId) {
-        Teacher teacher = teacherService.findTeacherById(teacherId);
-        return studentService.findStudentsByTeacher(teacher).stream()
-                .map(StudentDto::fromEntity)
-                .toList();
+//        Teacher teacher = teacherService.findTeacherById(teacherId);
+//        return studentService.findStudentsByTeacher(teacher).stream()
+//                .map(StudentDto::fromEntity)
+//                .toList();
+        return studentService.findStudentsByTeacher(teacherId);
     }
 
 

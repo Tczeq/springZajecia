@@ -1,6 +1,7 @@
 package pl.sszlify.coding.teacher.model.dto;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import pl.sszlify.coding.common.Language;
 import pl.sszlify.coding.teacher.model.Teacher;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 @Getter
 @Builder
+@EqualsAndHashCode
 public class TeacherDto {
     private int id;
     private String firstName;

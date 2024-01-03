@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.sszlify.coding.common.Language;
 import pl.sszlify.coding.teacher.model.Teacher;
+import pl.sszlify.coding.teacher.model.dto.TeacherDto;
 
 import java.util.List;
 
@@ -32,13 +33,18 @@ public class TeacherService {
     }
 
 
-    public List<Teacher> findAllByLanguage(Language language) {
-        return teacherRepository.findAllByLanguagesContaining(language);
+//    public List<Teacher> findAllByLanguage(Language language) {
+//        return teacherRepository.findAllByLanguagesContaining(language);
+//    }
+    public List<TeacherDto> findAllByLanguage(Language language) {
+        return teacherRepository.findAllByLanguagesContaining(language).stream()
+                .map(TeacherDto::fromEntity)
+                .toList();
     }
 
     public Teacher findTeacherById(int teacherId) {
         return teacherRepository.findById(teacherId)
-                .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + teacherId + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Teacher with id=" + teacherId + " not found"));
     }
 
     @Transactional
@@ -60,7 +66,7 @@ public class TeacherService {
     @Transactional
     public void update(Teacher updatedTeacher) {
         Teacher existingTeacher = teacherRepository.findWithLockingById(updatedTeacher.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Teacher with id " + updatedTeacher.getId() + " not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Teacher with id=" + updatedTeacher.getId() + " not found"));
 
         existingTeacher.setFirstName(updatedTeacher.getFirstName());
         existingTeacher.setLastName(updatedTeacher.getLastName());

@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.sszlify.coding.common.exception.LanguageMismatchException;
 import pl.sszlify.coding.student.model.Student;
+import pl.sszlify.coding.student.model.dto.StudentDto;
 import pl.sszlify.coding.teacher.TeacherRepository;
+import pl.sszlify.coding.teacher.TeacherService;
 import pl.sszlify.coding.teacher.model.Teacher;
 
 import java.text.MessageFormat;
@@ -35,9 +37,14 @@ public class StudentService {
         studentRepository.save(student);
     }
 
-    public List<Student> findStudentsByTeacher(Teacher teacher) {
-        return studentRepository.findAllByTeacher(teacher);
+    public List<StudentDto> findStudentsByTeacher(int teacherId) {
+        Teacher teacher = teacherRepository.findById(teacherId)
+                .orElseThrow(() -> new EntityNotFoundException("Teacher with id=" + teacherId + " not found"));
+        return studentRepository.findAllByTeacher(teacher).stream()
+                .map(StudentDto::fromEntity)
+                .toList();
     }
+
 
 
     @Transactional
